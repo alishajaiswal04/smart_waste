@@ -1,0 +1,594 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8" />
+  <title>Smart Waste – Routes & Trucks</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <link rel="stylesheet" href="/css/style.css" />
+  <!-- Page-specific small CSS (route-map / compact card adjustments) -->
+  <style>
+    /* Ensure three-bg sits behind page content (same behavior as index) */
+    #three-bg {
+      position: fixed;
+      inset: 0;
+      z-index: 0;
+      pointer-events: none;
+    }
+
+    #particles-js {
+      position: fixed;
+      inset: 0;
+      z-index: 0;
+      pointer-events: none;
+    }
+
+    /* Routes & Trucks specific layout */
+    .route-map-shell {
+      padding: 16px 18px 20px;
+    }
+
+    .route-map {
+      position: relative;
+      height: 260px;
+      border-radius: 18px;
+      background: linear-gradient(135deg, #e0f2fe, #dcfce7);
+      box-shadow: inset 0 0 0 1px rgba(148, 163, 184, 0.35);
+      overflow: hidden;
+    }
+
+    /* simple route lines */
+    .route-path {
+      position: absolute;
+      border-radius: 999px;
+      opacity: 0.8;
+    }
+
+    .route-path.route-a {
+      left: 8%;
+      top: 20%;
+      right: 18%;
+      height: 3px;
+      background: rgba(56, 189, 248, 0.9);
+    }
+
+    .route-path.route-b {
+      left: 15%;
+      top: 55%;
+      right: 10%;
+      height: 3px;
+      background: rgba(52, 211, 153, 0.9);
+    }
+
+    .route-path.route-c {
+      left: 22%;
+      top: 78%;
+      right: 6%;
+      height: 3px;
+      background: rgba(248, 250, 252, 0.9);
+    }
+
+    /* truck dots */
+    .truck-dot {
+      position: absolute;
+      width: 14px;
+      height: 14px;
+      border-radius: 999px;
+      background: #f97316;
+      box-shadow: 0 6px 18px rgba(249, 115, 22, 0.4);
+    }
+
+    .truck-a {
+      left: 26%;
+      top: 18%;
+    }
+
+    .truck-b {
+      left: 52%;
+      top: 53%;
+    }
+
+    .truck-c {
+      left: 78%;
+      top: 75%;
+    }
+
+    .route-map-empty-label {
+      position: absolute;
+      right: 16px;
+      bottom: 14px;
+      padding: 6px 10px;
+      border-radius: 999px;
+      background: rgba(15, 23, 42, 0.06);
+      font-size: 12px;
+      color: #64748b;
+    }
+
+    /* compact summary list for fuel stats */
+    .summary-list.compact .summary-item {
+      padding: 10px 12px;
+      margin-bottom: 8px;
+    }
+
+    .summary-list.compact .summary-label {
+      font-size: 13px;
+    }
+
+    .summary-list.compact .summary-value {
+      font-size: 16px;
+    }
+
+    .card-slim {
+      display: flex;
+      flex-direction: column;
+    }
+
+    /* ensure main content stacks above backgrounds */
+    .app-shell,
+    .main {
+      position: relative;
+      z-index: 2;
+    }
+  </style>
+</head>
+
+<body>
+  <div id="three-bg"></div>
+  <div id="particles-js"></div>
+
+  <div class="app-shell">
+    <!-- Sidebar -->
+    <aside class="sidebar">
+      <div class="sidebar-brand">
+        <div class="brand-logo" id="sidebarToggle">SW</div>
+        <div class="sidebar-brand-text">
+          <div class="brand-title">Smart Waste</div>
+          <div class="sidebar-tagline">Admin Control Center</div>
+        </div>
+      </div>
+      <div class="sidebar-tagline sidebar-brand-text">
+        Monitor bin levels, optimize truck routes, and keep your city clean.
+      </div>
+
+      <!-- Updated Routes & Trucks HTML Sidebar Structure -->
+      <ul class="sidebar-nav">
+        <li class="nav-item" onclick="window.location.href='index.html'">
+          <span class="icon">📊</span>
+          <span class="label">Dashboard</span>
+        </li>
+
+        <li class="nav-item" onclick="window.location.href='bin-monitoring.html'">
+          <span class="icon">🗺️</span>
+          <span class="label">Bin Monitoring</span>
+        </li>
+
+        <li class="nav-item active" onclick="window.location.href='routes-trucks.html'">
+          <span class="icon">🚚</span>
+          <span class="label">Routes & Trucks</span>
+        </li>
+
+        <li class="nav-item" onclick="window.location.href='alerts.html'">
+          <span class="icon">⚠️</span>
+          <span class="label">Alerts & Complaints</span>
+        </li>
+
+        <li class="nav-item" onclick="window.location.href='analytics.html'">
+          <span class="icon">📈</span>
+          <span class="label">Analytics & Reports</span>
+        </li>
+
+        <!-- <li class="nav-item">
+          <span class="icon">🗑️</span>
+          <span class="label">Bin / Area Mgmt</span>
+        </li> -->
+
+        <li class="nav-item">
+          <span class="icon">⚙️</span>
+          <span class="label">Settings</span>
+        </li>
+      </ul>
+
+
+      <div class="sidebar-footer">
+        <div class="sidebar-footer-meta">
+          <div class="sidebar-footer-label">Logged in as:</div>
+          <div class="sidebar-footer-value">Admin</div>
+          <div class="sidebar-footer-meta-small">City: Nashik Smart Zone</div>
+        </div>
+      </div>
+    </aside>
+
+    <!-- Main content -->
+    <main class="main routes-page">
+      <header class="topbar">
+        <div class="topbar-left">
+          <h1 class="page-title">Routes &amp; Trucks</h1>
+          <p class="page-subtitle">
+            Live truck locations, route efficiency and schedule planner
+          </p>
+        </div>
+
+        <div class="topbar-center">
+          <span class="topbar-badge">Model 1: Rule-based scheduling (live)</span>
+        </div>
+
+        <div class="topbar-right">
+          <div class="topbar-date-chip">
+            <span class="topbar-date-icon">📅</span>
+            <span id="topbar-date">Loading...</span>
+          </div>
+
+          <div class="user-chip">
+            <div class="user-avatar" id="user-avatar">--</div>
+            <div>
+              <div class="user-name" id="user-name">Loading...</div>
+              <div class="user-role" id="user-role">User</div>
+            </div>
+          </div>
+
+          <button class="logout-btn" onclick="window.location.href='/landing.html'">
+            <span>⏻</span> Logout
+          </button>
+        </div>
+      </header>
+
+      <section class="content">
+        <!-- KPI Row -->
+        <section class="kpi-row">
+          <article class="kpi-card">
+            <div class="kpi-label">Active routes (today)</div>
+            <div class="kpi-value" id="kpi-active-routes">–</div>
+            <div class="kpi-chip kpi-chip-green">Rule-based schedule</div>
+          </article>
+          <article class="kpi-card">
+            <div class="kpi-label">Trucks on road now</div>
+            <div class="kpi-value" id="kpi-trucks-road">–</div>
+            <div class="kpi-chip kpi-chip-blue">Live GPS feed (simulated)</div>
+          </article>
+          <article class="kpi-card">
+            <div class="kpi-label">Km planned (next 6 hrs)</div>
+            <div class="kpi-value" id="kpi-km-next">–</div>
+            <div class="kpi-chip kpi-chip-amber">Optimised vs fixed route</div>
+          </article>
+          <article class="kpi-card">
+            <div class="kpi-label">Estimated fuel saving</div>
+            <div class="kpi-value" id="kpi-fuel-saving">–</div>
+            <div class="kpi-chip kpi-chip-purple">Based on reduced trips</div>
+          </article>
+        </section>
+
+
+        <!-- Map + Live Truck Status -->
+        <section class="middle-row">
+          <section class="card">
+            <header class="card-header">
+              <div>
+                <h2 class="card-title">Route Overview Map</h2>
+                <p class="card-caption">
+                  Simulated ward-level truck movement and current active routes
+                </p>
+              </div>
+              <div class="pill-group">
+                <span class="pill pill-soft">Ward Map</span>
+                <span class="pill pill-soft pill-green">On-time</span>
+                <span class="pill pill-soft pill-amber">Behind schedule</span>
+                <span class="pill pill-soft pill-red">Delayed / overloaded</span>
+              </div>
+            </header>
+
+            <!-- <div class="route-map-shell">
+              <div class="route-map">
+                fake map grid / markers -->
+                <!-- <div class="route-path route-a"></div>
+                <div class="route-path route-b"></div>
+                <div class="route-path route-c"></div>
+
+                <div class="truck-dot truck-a" title="Truck R-101"></div>
+                <div class="truck-dot truck-b" title="Truck R-204"></div>
+                <div class="truck-dot truck-c" title="Truck R-305"></div>
+
+                <div class="route-map-empty-label">
+                  Live view (simulated)
+                </div>
+              </div>
+            </div>
+          </section>  -->
+          <div id="truckMap" style="height:400px; border-radius:12px;"></div>
+          <section class="card">
+            <header class="card-header">
+              <div>
+                <h2 class="card-title">Live Truck Status</h2>
+                <p class="card-caption">
+                  Last ping, current load and schedule status
+                </p>
+              </div>
+              <span class="pill pill-soft">Last 15 mins</span>
+            </header>
+
+            <div class="table-wrapper">
+              <table class="data-table" id="truck-status-table">
+                <thead>
+                  <tr>
+                    <th>Truck ID</th>
+                    <th>Route</th>
+                    <th>Last ping</th>
+                    <th>Load</th>
+                    <th>ETA to depot</th>
+                    <th>Status</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  <!-- filled by JS -->
+                </tbody>
+              </table>
+            </div>
+          </section>
+        </section>
+
+        <!-- Planner + Fuel -->
+        <section class="bottom-row">
+          <section class="card">
+            <header class="card-header">
+              <div>
+                <h2 class="card-title">Route Planner – Next 6 Hours</h2>
+                <p class="card-caption">
+                  Rule-based scheduling using bin priority and truck capacity
+                </p>
+              </div>
+              <span class="pill pill-soft">Auto-generated (demo)</span>
+            </header>
+
+            <div class="table-wrapper">
+              <table class="data-table" id="route-planner-table">
+                <thead>
+                  <tr>
+                    <th>Start</th>
+                    <th>Route</th>
+                    <th>Bins</th>
+                    <th>Distance</th>
+                    <th>Truck</th>
+                    <th>Priority</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  <!-- JS -->
+                </tbody>
+              </table>
+            </div>
+          </section>
+
+          <section class="card card-slim">
+            <header class="card-header">
+              <div>
+                <h2 class="card-title">Fuel &amp; Efficiency</h2>
+                <p class="card-caption">
+                  Comparison vs fixed-schedule baseline
+                </p>
+              </div>
+            </header>
+
+            <ul class="summary-list compact" id="fuel-summary-list">
+              <!-- JS -->
+            </ul>
+          </section>
+        </section>
+        <!-- ============================= -->
+        <!-- AI Truck Dispatch Plan Block -->
+        <!-- ============================= -->
+        <section class="dispatch-row">
+          <section class="card">
+            <header class="card-header">
+              <div>
+                <h2 class="card-title">AI Truck Dispatch Plan</h2>
+                <p class="card-caption">
+                  Machine‑learning based clustering and smart truck assignment
+                </p>
+              </div>
+              <span class="pill pill-soft">DBSCAN + Capacity Matching</span>
+            </header>
+
+            <div class="table-wrapper">
+              <table class="data-table" id="dispatch-plan-table">
+                <thead>
+                  <tr>
+                    <th>Cluster</th>
+                    <th>Area</th>
+                    <th>Truck</th>
+                    <th>Truck Capacity (kg)</th>
+                    <th>Total Waste (kg)</th>
+                    <th>Bins Assigned</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  <!-- Filled dynamically from ML dispatch output -->
+                </tbody>
+              </table>
+            </div>
+          </section>
+        </section>
+      </section>
+    </main>
+  </div>
+  <!-- Libraries -->
+  <script src="https://cdn.jsdelivr.net/npm/three@0.152.2/build/three.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/particles.js@2.0.0/particles.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/animejs@3.2.1/lib/anime.min.js"></script>
+
+  <!-- Leaflet Map -->
+  <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
+  <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+
+  <!-- Socket.io -->
+  <script src="/socket.io/socket.io.js"></script>
+
+  <!-- Page JS -->
+  <script src="/js/route-truck.js"></script>
+
+  <script>
+  // Protect page: redirect if user not logged in
+  const token = localStorage.getItem("token");
+  if (!token) {
+    window.location.href = "/landing.html";
+  }
+  // Load logged-in user info
+  const storedName = localStorage.getItem("name");
+  const storedRole = localStorage.getItem("role");
+
+  if (storedName) {
+    const nameEl = document.getElementById("user-name");
+    const avatarEl = document.getElementById("user-avatar");
+
+    if (nameEl) nameEl.innerText = storedName;
+
+    if (avatarEl) {
+      const initials = storedName
+        .split(" ")
+        .map(n => n[0])
+        .join("")
+        .toUpperCase()
+        .slice(0, 2);
+
+      avatarEl.innerText = initials;
+    }
+  }
+
+  if (storedRole) {
+    const roleEl = document.getElementById("user-role");
+    if (roleEl) roleEl.innerText = storedRole;
+  }
+
+  const socket = io();
+
+  // Map center (Nashik demo)
+  const map = L.map('truckMap').setView([19.9975, 73.7898], 13);
+
+  L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+    attribution: '© OpenStreetMap'
+  }).addTo(map);
+
+  const truckMarkers = {};
+  const binMarkers = {};
+  const routeLines = {};
+  const binPositions = [];
+
+  // Demo depot location
+  const depot = [19.995, 73.785];
+
+  const depotIcon = L.icon({
+    iconUrl: "https://cdn-icons-png.flaticon.com/512/684/684908.png",
+    iconSize: [28, 28]
+  });
+
+  L.marker(depot, { icon: depotIcon })
+    .addTo(map)
+    .bindPopup("<b>Waste Depot</b>");
+
+  // function to animate truck movement
+  function animateTruck(marker, newLatLng) {
+    const start = marker.getLatLng();
+    const steps = 20;
+    let i = 0;
+
+    const latStep = (newLatLng.lat - start.lat) / steps;
+    const lngStep = (newLatLng.lng - start.lng) / steps;
+
+    const interval = setInterval(() => {
+      i++;
+      marker.setLatLng([
+        start.lat + latStep * i,
+        start.lng + lngStep * i
+      ]);
+      if (i >= steps) clearInterval(interval);
+    }, 50);
+  }
+
+  // receive truck GPS updates
+  socket.on("truck-location", (truck) => {
+
+    const lat = truck.latitude;
+    const lng = truck.longitude;
+
+    if (!lat || !lng) return;
+
+    const pos = L.latLng(lat, lng);
+
+    if (!truckMarkers[truck.truckId]) {
+
+      const icon = L.icon({
+        iconUrl: "https://cdn-icons-png.flaticon.com/512/1995/1995506.png",
+        iconSize: [34, 34]
+      });
+
+      truckMarkers[truck.truckId] = L.marker(pos, { icon })
+        .addTo(map)
+        .bindPopup(`<b>${truck.truckId}</b><br>Driver: ${truck.driver}`);
+
+    } else {
+
+      animateTruck(truckMarkers[truck.truckId], pos);
+
+    }
+
+    // draw route line from depot → bins → truck
+    const routePath = [depot, ...binPositions, pos];
+
+    if (!routeLines[truck.truckId]) {
+      routeLines[truck.truckId] = L.polyline(routePath, {
+        color: "#3b82f6",
+        weight: 4,
+        dashArray: "6,6"
+      }).addTo(map);
+    } else {
+      routeLines[truck.truckId].setLatLngs(routePath);
+    }
+
+  });
+
+  // fetch bins and show markers
+  async function loadBins() {
+    try {
+
+      const res = await fetch("/api/bins", {
+        headers: {
+          Authorization: "Bearer " + localStorage.getItem("token")
+        }
+      });
+      const bins = await res.json();
+
+      bins.forEach(bin => {
+
+        const lat = bin.latitude;
+        const lng = bin.longitude;
+
+        if (!lat || !lng) return;
+
+        let iconUrl =
+          bin.fillLevel >= 90
+            ? "https://cdn-icons-png.flaticon.com/512/565/565547.png"
+            : "https://cdn-icons-png.flaticon.com/512/484/484662.png";
+
+        const icon = L.icon({
+          iconUrl,
+          iconSize: [26, 26]
+        });
+
+        const marker = L.marker([lat, lng], { icon })
+          .addTo(map)
+          .bindPopup(
+            `<b>${bin.binId}</b><br>Fill: ${bin.fillLevel}%`
+          );
+        binPositions.push([lat, lng]);
+        binMarkers[bin.binId] = marker;
+
+      });
+
+    } catch (err) {
+      console.error("Failed loading bins", err);
+    }
+  }
+
+  loadBins();
+  </script>
+</body>
+
+</html>

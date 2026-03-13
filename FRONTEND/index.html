@@ -1,0 +1,424 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8" />
+  <title>Smart Waste Management - Admin Dashboard</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <!-- Google Fonts -->
+  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600&family=Inter:wght@400;500&display=swap"
+    rel="stylesheet">
+  <!-- Local CSS -->
+  <link rel="stylesheet" href="/css/style.css">
+  <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
+</head>
+
+<body class="dashboard-page">
+  <div id="three-bg"></div>
+  <div id="particles-js"></div>
+
+  <div class="app-shell">
+    <!-- SIDEBAR -->
+    <aside class="sidebar">
+      <div class="sidebar-brand">
+        <div class="brand-logo" id="sidebarToggle">SW</div>
+        <div class="brand-text sidebar-brand-text">
+          <h1>Smart Waste</h1>
+          <span>Admin Control Center</span>
+        </div>
+      </div>
+      <div class="sidebar-tagline sidebar-brand-text">
+        Monitor bin levels, optimize truck routes, and keep your city clean.
+      </div>
+
+      <ul class="sidebar-nav">
+        <li class="nav-item active" onclick="window.location.href='index.html'">
+          <span class="icon">📊</span>
+          <span class="label">Dashboard</span>
+        </li>
+        <li class="nav-item" onclick="window.location.href='bin-monitoring.html'">
+          <span class="icon">🗺️</span>
+          <span class="label">Bin Monitoring</span>
+        </li>
+        <li class="nav-item" onclick="window.location.href='routes-trucks.html'">
+          <span class="icon">🚚</span>
+          <span class="label">Routes & Trucks</span>
+        </li>
+        <li class="nav-item" onclick="window.location.href='alerts.html'">
+          <span class="icon">⚠️</span>
+          <span class="label">Alerts & Complaints</span>
+        </li>
+        <li class="nav-item" onclick="window.location.href='analytics.html'">
+          <span class="icon">📈</span>
+          <span class="label">Analytics & Reports</span>
+        </li>
+        <!-- <li class="nav-item">
+          <span class="icon">🗑️</span>
+          <span class="label">Bin / Area Mgmt</span>
+        </li> -->
+        <li class="nav-item">
+          <span class="icon">⚙️</span>
+          <span class="label">Settings</span>
+        </li>
+      </ul>
+
+
+      <div class="sidebar-footer sidebar-brand-text">
+        <div>Logged in as: <strong>Admin</strong></div>
+        <div style="margin-top:4px;">City: Nashik Smart Zone</div>
+      </div>
+    </aside>
+
+    <!-- MAIN PANEL -->
+    <div class="main dashboard-page">
+
+      <!-- TOPBAR -->
+      <header class="topbar">
+        <div class="topbar-left">
+          <div>
+            <div class="topbar-title">Admin Dashboard</div>
+            <div class="topbar-subtitle">
+              Real-time bin status, alerts & route overview
+            </div>
+          </div>
+          <span class="topbar-badge">Model 1: Rule-based scheduling (live)</span>
+        </div>
+        <div class="topbar-right">
+          <div class="topbar-pill">
+            <span>📅</span>
+            <span id="topbar-date">Loading...</span>
+          </div>
+
+          <div class="user-chip">
+            <div class="user-avatar" id="user-avatar">--</div>
+            <div>
+              <div class="user-name" id="user-name">Loading...</div>
+              <div class="user-role" id="user-role">User</div>
+            </div>
+          </div>
+          <!-- Theme toggle button (before Logout)
+          <button id="theme-toggle" class="theme-toggle" aria-label="Toggle dark mode">
+            🌙
+          </button> -->
+          <button class="logout-btn" onclick="window.location.href='/landing.html'">
+            <span>⏻</span> Logout
+          </button>
+        </div>
+      </header>
+
+      <!-- CONTENT -->
+      <main class="content">
+        <!-- KPI CARDS -->
+        <section class="kpi-row">
+          <article class="kpi-card kpi-card-1">
+            <div class="kpi-glow"></div>
+            <div class="kpi-label">Total Smart Bins</div>
+            <div class="kpi-value">
+              <span id="kpi-total-bins">--</span>
+            </div>
+            <div class="kpi-subtext">
+              Covering commercial + residential zones
+            </div>
+          </article>
+
+          <article class="kpi-card kpi-card-2">
+            <div class="kpi-glow"></div>
+            <div class="kpi-label">Active Alerts</div>
+            <div class="kpi-value">
+              <span id="kpi-active-alerts">--</span>
+              <span class="kpi-trend">+2 vs yesterday</span>
+            </div>
+            <div class="kpi-subtext">
+              Overflow + unusual fill patterns being monitored
+            </div>
+          </article>
+
+          <article class="kpi-card kpi-card-3">
+            <div class="kpi-glow"></div>
+            <div class="kpi-label">Today's Trips</div>
+            <div class="kpi-value">
+              <span id="kpi-trips">--</span>
+              <span class="kpi-trend down">-4 vs weekly avg</span>
+            </div>
+            <div class="kpi-subtext">
+              Trips reduced via smarter scheduling
+            </div>
+          </article>
+
+          <article class="kpi-card kpi-card-4">
+            <div class="kpi-glow"></div>
+            <div class="kpi-label">Avg Fill at Collection</div>
+            <div class="kpi-value">
+              <span id="kpi-avg-fill">--</span>
+            </div>
+            <div class="kpi-subtext">
+              Higher value = fewer half-empty collections
+            </div>
+          </article>
+        </section>
+
+        <!-- MAP + SUMMARY -->
+        <section class="middle-row">
+          <!-- Map -->
+          <section class="card">
+            <div class="card-header">
+              <h2 class="card-title">Bin Status Map</h2>
+              <span class="card-tag">Live view (simulated)</span>
+            </div>
+            <div class="map-container">
+              <div id="map" style="width:100%; height:350px; border-radius:10px;"></div>
+            </div>
+          </section>
+
+          <!-- Summary -->
+          <section class="card">
+            <div class="card-header">
+              <h2 class="card-title">Today's Summary</h2>
+              <span class="card-tag">Model 1 – Rule based</span>
+            </div>
+            <ul class="summary-list" id="summary-list">
+              <!-- Filled via JS -->
+            </ul>
+          </section>
+        </section>
+
+        <!-- TABLES -->
+        <section class="bottom-row">
+          <!-- Critical bins -->
+          <section class="card scrollable">
+            <div class="card-header">
+              <h2 class="card-title">Top 5 Critical Bins</h2>
+              <span class="card-tag">Priority: High</span>
+            </div>
+            <table class="simple-table" id="critical-bins-table">
+              <thead>
+                <tr>
+                  <th>Bin ID</th>
+                  <th>Location</th>
+                  <th>Fill</th>
+                  <th>Last Collected</th>
+                  <th>Status</th>
+                </tr>
+              </thead>
+              <tbody>
+                <!-- JS inserts rows -->
+              </tbody>
+            </table>
+          </section>
+
+          <!-- Upcoming pickups -->
+          <section class="card scrollable">
+            <div class="card-header">
+              <h2 class="card-title">Upcoming Scheduled Pickups</h2>
+              <span class="card-tag">Next 6 hours</span>
+            </div>
+            <table class="simple-table" id="scheduled-pickups-table">
+              <thead>
+                <tr>
+                  <th>Route</th>
+                  <th>Bins</th>
+                  <th>Start</th>
+                  <th>Priority</th>
+                </tr>
+              </thead>
+              <tbody>
+                <!-- JS inserts rows -->
+              </tbody>
+            </table>
+          </section>
+
+          <!-- Alert feed -->
+          <section class="card scrollable">
+            <div class="card-header">
+              <h2 class="card-title">Live Alert Feed</h2>
+              <span class="card-tag">Last 10 events</span>
+            </div>
+            <table class="simple-table" id="alert-feed-table">
+              <thead>
+                <tr>
+                  <th>Time</th>
+                  <th>Source</th>
+                  <th>Type</th>
+                  <th>Status</th>
+                </tr>
+              </thead>
+              <tbody>
+                <!-- JS inserts rows -->
+              </tbody>
+            </table>
+          </section>
+        </section>
+      </main>
+    </div>
+  </div>
+
+  <!-- Libraries from CDN -->
+  <script src="https://cdn.jsdelivr.net/npm/three@0.152.2/build/three.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/particles.js@2.0.0/particles.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/animejs@3.2.1/lib/anime.min.js"></script>
+  <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+
+  <!-- Local JS -->
+  <script src="https://cdn.socket.io/4.7.5/socket.io.min.js"></script>
+  <!-- <script src="/js/app.js"></script> -->
+<script>
+// Load logged-in user info
+const storedName = localStorage.getItem("name");
+const storedRole = localStorage.getItem("role");
+
+if (storedName) {
+  const nameEl = document.getElementById("user-name");
+  const avatarEl = document.getElementById("user-avatar");
+  if (nameEl) nameEl.innerText = storedName;
+
+  if (avatarEl) {
+    const initials = storedName
+      .split(" ")
+      .map(n => n[0])
+      .join("")
+      .toUpperCase()
+      .slice(0,2);
+    avatarEl.innerText = initials;
+  }
+}
+
+if (storedRole) {
+  const roleEl = document.getElementById("user-role");
+  if (roleEl) roleEl.innerText = storedRole;
+}
+
+function logoutUser(){
+  // remove auth data
+  localStorage.removeItem("token");
+  localStorage.removeItem("name");
+  localStorage.removeItem("role");
+
+  // redirect to login page
+  window.location.href = "login.html";
+}
+
+async function loadDashboard(){
+  try{
+    const token = localStorage.getItem("token");
+    const res = await fetch('/api/dashboard', {
+      headers: {
+        "Authorization": "Bearer " + token
+      }
+    });
+    const data = await res.json();
+
+    if(data.kpis){
+      document.getElementById('kpi-total-bins').innerText = data.kpis.totalBins;
+      document.getElementById('kpi-active-alerts').innerText = data.kpis.activeAlerts;
+      document.getElementById('kpi-trips').innerText = data.kpis.tripsToday;
+      document.getElementById('kpi-avg-fill').innerText = data.kpis.avgFill + '%';
+    }
+
+    const criticalTable = document.querySelector('#critical-bins-table tbody');
+    criticalTable.innerHTML = '';
+    if(data.criticalBins){
+      data.criticalBins.forEach(bin=>{
+        const row = `<tr>
+          <td>${bin.binId}</td>
+          <td>${bin.location}</td>
+          <td>${bin.fillLevel}%</td>
+          <td>${new Date(bin.lastCollected).toLocaleString()}</td>
+          <td>${bin.status}</td>
+        </tr>`;
+        criticalTable.innerHTML += row;
+      });
+    }
+
+  }catch(err){
+    console.error('Dashboard load error', err);
+  }
+}
+
+loadDashboard();
+// realtime updates from backend
+const socket = io();
+
+socket.on("connect", () => {
+  console.log("Dashboard socket connected");
+});
+
+
+// Initialize Leaflet Map
+const map = L.map('map').setView([19.9975, 73.7898], 13); // Nashik center
+const binMarkers = {}; // store markers for realtime updates
+// Load bins on dashboard map
+async function loadBins(){
+
+  const res = await fetch("/api/bins");
+  const bins = await res.json();
+
+  bins.forEach(bin => {
+
+    // ensure coordinates exist
+    if (bin.latitude == null || bin.longitude == null) return;
+
+    const lat = Number(bin.latitude);
+    const lng = Number(bin.longitude);
+
+    if (isNaN(lat) || isNaN(lng)) return;
+
+    let color = "green";
+
+    if (bin.fillLevel >= 90) color = "red";
+    else if (bin.fillLevel >= 70) color = "orange";
+
+    const marker = L.circleMarker(
+      [lat, lng],
+      {
+        radius: 8,
+        color: color,
+        fillColor: color,
+        fillOpacity: 0.8
+      }
+    ).addTo(map);
+
+    marker.bindPopup(
+      `<b>${bin.binId}</b><br>
+       ${bin.location}<br>
+       Fill: ${bin.fillLevel}%`
+    );
+
+    // store marker reference for realtime updates
+    binMarkers[bin.binId] = marker;
+
+  });
+
+}
+
+L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+  attribution: '© OpenStreetMap contributors'
+}).addTo(map);
+
+loadBins();
+
+// realtime bin updates from backend
+socket.on("bin-update", (bin) => {
+
+  const marker = binMarkers[bin.binId];
+  if (!marker) return;
+
+  let color = "green";
+  if (bin.fillLevel >= 90) color = "red";
+  else if (bin.fillLevel >= 70) color = "orange";
+
+  marker.setStyle({
+    color: color,
+    fillColor: color
+  });
+
+  marker.setPopupContent(
+    `<b>${bin.binId}</b><br>
+     ${bin.location}<br>
+     Fill: ${bin.fillLevel}%`
+  );
+
+});
+</script>
+</body>
+
+</html>

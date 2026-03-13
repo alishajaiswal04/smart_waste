@@ -1,0 +1,230 @@
+body{
+margin:0;
+font-family:Arial, sans-serif;
+background:#ecfdf5;
+}
+
+
+/* PARTICLE BACKGROUND */
+
+#particles-js{
+position:fixed;
+width:100%;
+height:100%;
+top:0;
+left:0;
+z-index:-1;
+}
+
+
+/* SIDEBAR */
+
+.sidebar{
+position:fixed;
+width:220px;
+height:100%;
+background:linear-gradient(180deg,#064e3b,#022c22);
+color:white;
+padding:20px;
+}
+
+.sidebar ul{
+list-style:none;
+padding:0;
+}
+
+.sidebar a{
+color:white;
+text-decoration:none;
+display:block;
+padding:10px;
+border-radius:6px;
+transition:0.3s;
+}
+
+.sidebar a:hover{
+background:#059669;
+}
+
+
+/* MAIN */
+
+.main{
+margin-left:240px;
+padding:20px;
+}
+
+
+/* TOPBAR */
+
+.topbar{
+display:flex;
+justify-content:space-between;
+margin-bottom:20px;
+}
+
+
+/* KPI CONTAINER */
+
+.kpi-container{
+display:grid;
+grid-template-columns:repeat(4,1fr);
+gap:20px;
+margin-bottom:20px;
+}
+
+
+/* KPI CARDS */
+
+.kpi-card{
+background:linear-gradient(135deg,#34d399,#059669);
+color:white;
+padding:20px;
+border-radius:12px;
+box-shadow:0 6px 18px rgba(0,0,0,0.15);
+transition:0.3s;
+cursor:pointer;
+}
+
+.kpi-card h3{
+margin-bottom:10px;
+}
+
+.kpi-card p{
+font-size:20px;
+font-weight:bold;
+}
+
+.kpi-card:hover{
+transform:translateY(-6px) scale(1.02);
+box-shadow:0 12px 25px rgba(0,0,0,0.25);
+}
+
+
+/* CARD */
+
+.card{
+background:rgba(16,185,129,0.08);
+border:1px solid rgba(16,185,129,0.25);
+padding:20px;
+border-radius:12px;
+margin-bottom:20px;
+box-shadow:0 6px 18px rgba(0,0,0,0.12);
+backdrop-filter:blur(6px);
+}
+
+
+/* TABLE */
+
+table{
+width:100%;
+border-collapse:collapse;
+background:white;
+border-radius:8px;
+overflow:hidden;
+}
+
+th{
+background:#059669;
+color:white;
+text-align:left;
+}
+
+th,td{
+padding:12px;
+border-bottom:1px solid #eee;
+}
+
+
+/* BUTTON */
+
+button{
+background:#10b981;
+color:white;
+border:none;
+padding:6px 12px;
+border-radius:6px;
+cursor:pointer;
+transition:0.3s;
+}
+
+button:hover{
+background:#059669;
+}
+
+
+/* PROGRESS BAR */
+
+.progress-bar{
+height:12px;
+background:#eee;
+border-radius:10px;
+overflow:hidden;
+}
+
+#truckFill{
+height:12px;
+background:#10b981;
+width:0%;
+border-radius:10px;
+}
+
+
+/* MAP */
+
+#map,
+#routeMap{
+height:45vh;
+min-height:300px;
+width:100%;
+border-radius:10px;
+}
+
+
+/* CHART SIZE */
+
+canvas{
+max-width:100%;
+height:320px !important;
+}
+
+
+/* RESPONSIVE */
+
+@media(max-width:900px){
+
+.kpi-container{
+grid-template-columns:1fr 1fr;
+}
+
+.sidebar{
+width:180px;
+}
+
+.main{
+margin-left:200px;
+}
+
+}
+
+@media(max-width:768px){
+
+.sidebar{
+display:none;
+}
+
+.main{
+margin-left:0;
+padding:15px;
+}
+
+.kpi-container{
+grid-template-columns:1fr;
+}
+
+#map,
+#routeMap{
+height:300px;
+}
+
+}

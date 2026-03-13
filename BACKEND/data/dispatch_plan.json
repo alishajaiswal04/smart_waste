@@ -1,0 +1,26 @@
+[
+{
+"cluster":0,
+"area":"Esplanade",
+"truck":"T001",
+"truck_capacity":350,
+"total_waste":185,
+"bins":["B001","B002","B003","B004","B005"]
+},
+{
+"cluster":1,
+"area":"Park Street",
+"truck":"T002",
+"truck_capacity":300,
+"total_waste":171,
+"bins":["B006","B007","B008","B009","B010"]
+},
+{
+"cluster":2,
+"area":"Sealdah",
+"truck":"T003",
+"truck_capacity":270,
+"total_waste":179,
+"bins":["B011","B012","B013","B014","B015"]
+}
+]

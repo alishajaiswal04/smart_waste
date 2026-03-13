@@ -1,0 +1,133 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+
+<meta charset="UTF-8">
+<title>Pickups</title>
+
+<link rel="stylesheet" href="/css/styles.css">
+
+</head>
+
+<body>
+
+<!-- SIDEBAR -->
+
+<div class="sidebar">
+
+<h2>♻ SmartWaste</h2>
+
+<li><a href="driver.html" >Dashboard</a></li>
+      <li><a href="driver-route.html" >My Route</a></li>
+      <li><a href="driver-pickups.html" class="active">Pickups</a></li>
+      <li><a href="driver-alerts.html">Alerts</a></li>
+      <li><a href="driver-history.html">History</a></li>
+
+</div>
+
+
+<!-- MAIN -->
+
+<div class="main">
+
+<div class="topbar">
+<h1>Pickup Management</h1>
+<div id="date"></div>
+</div>
+
+
+<!-- KPI CARDS -->
+
+<div class="kpi-container">
+
+<div class="kpi-card">
+<h3>Total Bins</h3>
+<p id="totalBins">5</p>
+</div>
+
+<div class="kpi-card">
+<h3>Collected</h3>
+<p id="collectedBins">0</p>
+</div>
+
+<div class="kpi-card">
+<h3>Pending</h3>
+<p id="pendingBins">5</p>
+</div>
+
+</div>
+
+
+<!-- PICKUP TABLE -->
+
+<div class="card">
+
+<h2>Assigned Pickups</h2>
+
+<table>
+
+<thead>
+<tr>
+<th>Bin ID</th>
+<th>Location</th>
+<th>Fill Level</th>
+<th>Status</th>
+<th>Action</th>
+</tr>
+</thead>
+
+<tbody id="pickupTable">
+
+<tr>
+<td>BIN-12</td>
+<td>MG Road Market</td>
+<td>96%</td>
+<td class="status">Pending</td>
+<td><button onclick="collect(this)">Collect</button></td>
+</tr>
+
+<tr>
+<td>BIN-07</td>
+<td>Bus Stand</td>
+<td>94%</td>
+<td class="status">Pending</td>
+<td><button onclick="collect(this)">Collect</button></td>
+</tr>
+
+<tr>
+<td>BIN-23</td>
+<td>Housing Colony</td>
+<td>91%</td>
+<td class="status">Pending</td>
+<td><button onclick="collect(this)">Collect</button></td>
+</tr>
+
+<tr>
+<td>BIN-31</td>
+<td>Vegetable Market</td>
+<td>89%</td>
+<td class="status">Pending</td>
+<td><button onclick="collect(this)">Collect</button></td>
+</tr>
+
+<tr>
+<td>BIN-02</td>
+<td>Public Park</td>
+<td>87%</td>
+<td class="status">Pending</td>
+<td><button onclick="collect(this)">Collect</button></td>
+</tr>
+
+</tbody>
+
+</table>
+
+</div>
+
+</div>
+
+<script src="pickups.js"></script>
+
+</body>
+</html>

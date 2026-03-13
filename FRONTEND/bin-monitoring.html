@@ -1,0 +1,242 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8" />
+  <title>Smart Waste - Bin Monitoring</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <!-- Google Fonts -->
+  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600&family=Inter:wght@400;500&display=swap"
+    rel="stylesheet">
+  <!-- Shared CSS -->
+  <link rel="stylesheet" href="/css/style.css">
+</head>
+
+<body>
+  <div id="three-bg"></div>
+  <div id="particles-js"></div>
+
+  <div class="app-shell">
+    <!-- SIDEBAR -->
+    <aside class="sidebar">
+      <div class="sidebar-brand">
+        <div class="brand-logo" id="sidebarToggle">SW</div>
+        <div class="brand-text sidebar-brand-text">
+          <h1>Smart Waste</h1>
+          <span>Admin Control Center</span>
+        </div>
+      </div>
+      <div class="sidebar-tagline sidebar-brand-text">
+        Monitor bin levels, optimize truck routes, and keep your city clean.
+      </div>
+
+      <ul class="sidebar-nav">
+        <li class="nav-item" onclick="window.location.href='index.html'">
+          <span class="icon">📊</span>
+          <span class="label">Dashboard</span>
+        </li>
+        <li class="nav-item active" onclick="window.location.href='bin-monitoring.html'">
+          <span class="icon">🗺️</span>
+          <span class="label">Bin Monitoring</span>
+        </li>
+        <li class="nav-item" onclick="window.location.href='routes-trucks.html'">
+          <span class="icon">🚚</span>
+          <span class="label">Routes & Trucks</span>
+        </li>
+        <li class="nav-item" onclick="window.location.href='alerts.html'">
+          <span class="icon">⚠️</span>
+          <span class="label">Alerts & Complaints</span>
+        </li>
+        <li class="nav-item" onclick="window.location.href='analytics.html'">
+          <span class="icon">📈</span>
+          <span class="label">Analytics & Reports</span>
+        </li>
+        <!-- <li class="nav-item">
+          <span class="icon">🗑️</span>
+          <span class="label">Bin / Area Mgmt</span>
+        </li> -->
+        <li class="nav-item">
+          <span class="icon">⚙️</span>
+          <span class="label">Settings</span>
+        </li>
+      </ul>
+      <!-- Theme toggle button (before Logout)
+      <button id="theme-toggle" class="theme-toggle" aria-label="Toggle dark mode">
+        🌙
+      </button> -->
+      <div class="sidebar-footer sidebar-brand-text">
+        <div>Logged in as: <strong>Admin</strong></div>
+        <div style="margin-top:4px;">City: Nashik Smart Zone</div>
+      </div>
+    </aside>
+
+    <!-- MAIN PANEL -->
+    <div class="main">
+      <!-- TOPBAR -->
+      <header class="topbar">
+        <div class="topbar-left">
+          <div>
+            <div class="topbar-title">Bin Monitoring</div>
+            <div class="topbar-subtitle">
+              Live bin map, filters & detailed status for each bin
+            </div>
+          </div>
+          <span class="topbar-badge">Real-time sensor view (simulated)</span>
+        </div>
+        <div class="topbar-right">
+          <div class="topbar-pill">
+            <span>📅</span>
+            <span id="topbar-date">Loading...</span>
+          </div>
+
+          <div class="user-chip">
+            <div class="user-avatar" id="user-avatar">--</div>
+            <div>
+              <div class="user-name" id="user-name">Loading...</div>
+              <div class="user-role" id="user-role">User</div>
+            </div>
+          </div>
+
+                    <button class="logout-btn" onclick="window.location.href='/landing.html'">
+            <span>⏻</span> Logout
+          </button>
+        </div>
+      </header>
+
+      <!-- CONTENT -->
+      <main class="content">
+        <!-- FILTER BAR -->
+        <section class="filter-row">
+          <div class="filter-group">
+            <label>Area / Ward</label>
+            <select id="filter-area">
+              <option value="all">All Areas</option>
+              <option value="ward-1">Ward 1 – Residential</option>
+              <option value="ward-2">Ward 2 – Commercial</option>
+              <option value="ward-3">Ward 3 – Mixed</option>
+            </select>
+          </div>
+
+          <div class="filter-group">
+            <label>Status</label>
+            <select id="filter-status">
+              <option value="all">All</option>
+              <option value="normal">Normal (&lt; 70%)</option>
+              <option value="warning">Warning (70–90%)</option>
+              <option value="critical">Critical (&gt;= 90%)</option>
+            </select>
+          </div>
+
+          <div class="filter-group">
+            <label>Type</label>
+            <select id="filter-type">
+              <option value="all">All types</option>
+              <option value="residential">Residential</option>
+              <option value="commercial">Commercial</option>
+              <option value="public">Public</option>
+            </select>
+          </div>
+
+          <div class="filter-group">
+            <label>Search Bin</label>
+            <input type="text" id="filter-search" placeholder="BIN-12-C, MG Road..." />
+          </div>
+        </section>
+
+        <!-- MAP + DETAILS -->
+        <section class="middle-row bin-monitor-row">
+          <!-- Map -->
+          <section class="card">
+            <div class="card-header">
+              <h2 class="card-title">Bin Status Map</h2>
+              <span class="card-tag">Click a bin to see details</span>
+            </div>
+            <div class="map-container" id="bins-map">
+              <div class="fake-map-label">
+                🗺️ Ward Map &nbsp; | &nbsp;
+                <span style="color:#16a34a;">●</span> Normal &nbsp;
+                <span style="color:#f59e0b;">●</span> Warning &nbsp;
+                <span style="color:#ef4444;">●</span> Critical
+              </div>
+              <!-- Dots inserted by JS -->
+            </div>
+          </section>
+
+          <!-- Right: Selected bin details + mini list -->
+          <section class="card">
+            <div class="card-header">
+              <h2 class="card-title">Selected Bin Details</h2>
+              <span class="card-tag" id="selected-bin-tag">None selected</span>
+            </div>
+
+            <div id="selected-bin-details" class="selected-bin-details">
+              <p>Select a bin from the map or list to view detailed information.</p>
+            </div>
+
+            <hr class="divider">
+
+            <div class="card-header" style="margin-top:4px;">
+              <h2 class="card-title">Bin List (Filtered)</h2>
+              <span class="card-tag">Click to focus on map</span>
+            </div>
+
+            <div class="scrollable" style="max-height: 220px;">
+              <table class="simple-table" id="bins-table">
+                <thead>
+                  <tr>
+                    <th>Bin ID</th>
+                    <th>Area</th>
+                    <th>Type</th>
+                    <th>Fill</th>
+                    <th>Status</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  <!-- JS inserts rows -->
+                </tbody>
+              </table>
+            </div>
+          </section>
+        </section>
+      </main>
+    </div>
+  </div>
+
+  <!-- Libraries -->
+  <script src="https://cdn.jsdelivr.net/npm/three@0.152.2/build/three.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/particles.js@2.0.0/particles.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/animejs@3.2.1/lib/anime.min.js"></script>
+
+  <script>
+  // Load logged-in user info
+  const storedName = localStorage.getItem("name");
+  const storedRole = localStorage.getItem("role");
+
+  if (storedName) {
+    const nameEl = document.getElementById("user-name");
+    const avatarEl = document.getElementById("user-avatar");
+
+    if (nameEl) nameEl.innerText = storedName;
+
+    if (avatarEl) {
+      const initials = storedName
+        .split(" ")
+        .map(n => n[0])
+        .join("")
+        .toUpperCase()
+        .slice(0, 2);
+
+      avatarEl.innerText = initials;
+    }
+  }
+
+  if (storedRole) {
+    const roleEl = document.getElementById("user-role");
+    if (roleEl) roleEl.innerText = storedRole;
+  }
+  </script>
+  <!-- Page JS -->
+  <script src="/js/bin-monitoring.js"></script>
+</body>
+
+</html>

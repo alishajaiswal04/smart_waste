@@ -1,0 +1,105 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+
+<meta charset="UTF-8">
+<title>Driver Alerts</title>
+
+<link rel="stylesheet" href="/css/styles.css">
+
+</head>
+
+<body>
+
+<!-- SIDEBAR -->
+<div class="sidebar">
+
+<h2>♻ SmartWaste</h2>
+
+<ul>
+  <li><a href="driver.html">Dashboard</a></li>
+  <li><a href="driver-route.html">My Route</a></li>
+  <li><a href="driver-pickups.html">Pickups</a></li>
+  <li><a href="driver-alerts.html" class="active">Alerts</a></li>
+  <li><a href="driver-history.html">History</a></li>
+</ul>
+
+</div>
+
+
+<!-- MAIN CONTENT -->
+<div class="main">
+
+<!-- TOP BAR -->
+<div class="topbar">
+<h1>Driver Alerts</h1>
+<div id="date"></div>
+</div>
+
+
+<!-- ALERT STATS -->
+<div class="stats">
+
+<div class="card">
+<h3>Total Alerts</h3>
+<h2 id="totalAlerts">0</h2>
+<p>Assigned Today</p>
+</div>
+
+<div class="card">
+<h3>High Priority</h3>
+<h2 id="highAlerts">0</h2>
+<p>Immediate Action</p>
+</div>
+
+<div class="card">
+<h3>Resolved</h3>
+<h2 id="resolvedAlerts">0</h2>
+<p>Completed</p>
+</div>
+
+<div class="card">
+<h3>Pending</h3>
+<h2 id="pendingAlerts">0</h2>
+<p>Remaining Tasks</p>
+</div>
+
+</div>
+
+
+<!-- ALERT TABLE -->
+<div class="card">
+
+<h2>Assigned Alerts</h2>
+
+<table class="data-table">
+
+<thead>
+<tr>
+<th>Alert ID</th>
+<th>Bin</th>
+<th>Location</th>
+<th>Issue</th>
+<th>Priority</th>
+<th>Status</th>
+<th>Action</th>
+</tr>
+</thead>
+
+<tbody id="alertTable">
+
+<!-- Dynamic alerts will load here -->
+
+</tbody>
+
+</table>
+
+</div>
+
+</div>
+
+<script src="/js/driver-alerts.js"></script>
+
+</body>
+</html>

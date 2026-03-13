@@ -1,0 +1,299 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <title>Smart Waste | Alerts & Complaints</title>
+
+    <link rel="stylesheet" href="/css/alerts.css">
+
+    <!-- Libraries -->
+
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/particles.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/animejs/lib/anime.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
+
+</head>
+
+<body>
+
+    <!-- Animated Backgrounds -->
+
+    <div id="particles-js"></div>
+    <div id="three-bg"></div>
+
+    <div class="layout">
+
+        <!-- SIDEBAR -->
+
+        <aside class="sidebar">
+
+            <div class="logo">
+
+                <div class="logo-box">SW</div>
+
+                <div>
+                    <h2>Smart Waste</h2>
+                    <p>Admin Control Center</p>
+                </div>
+
+            </div>
+
+            <p class="tagline">
+                Monitor bin levels, optimize truck routes, and keep your city clean.
+            </p>
+
+            <nav class="menu">
+
+                <a href="index.html">📊 Dashboard</a>
+
+                <a href="bin-monitoring.html">🗺️ Bin Monitoring</a>
+
+                <a href="routes-trucks.html">🚚 Routes & Trucks</a>
+
+                <a href="alerts.html" class="active">⚠ Alerts & Complaints</a>
+
+                <a href="analytics.html">📈 Analytics & Reports</a>
+
+                <!-- <a href="./bin-management.html">🗑 Bin / Area Mgmt</a> -->
+
+                <a href="./settings.html">⚙ Settings</a>
+
+            </nav>
+
+        </aside>
+
+
+
+        <!-- MAIN CONTENT -->
+
+        <main class="main">
+
+            <header class="page-header">
+
+                <h1>Alerts & Complaints</h1>
+                <p>Monitor system alerts and citizen complaints</p>
+
+            </header>
+
+
+            <!-- ALERT SUMMARY -->
+
+            <section class="alert-cards">
+
+                <div class="card card-alert">
+                    <h3>Active Alerts</h3>
+                    <h2 id="activeAlerts">0</h2>
+                </div>
+
+                <div class="card card-warning">
+                    <h3>Overflow Bins</h3>
+                    <h2 id="overflowBins">0</h2>
+                </div>
+
+                <div class="card card-attention">
+                    <h3>Missed Collections</h3>
+                    <h2 id="missedCollections">0</h2>
+                </div>
+
+                <div class="card card-info">
+                    <h3>Citizen Complaints</h3>
+                    <h2 id="citizenComplaints">0</h2>
+                </div>
+
+            </section>
+
+
+
+            <!-- SYSTEM ALERTS -->
+
+            <section class="table-card">
+
+                <h3>System Alerts</h3>
+
+                <table>
+
+                    <thead>
+                        <tr>
+                            <th>Time</th>
+                            <th>Ward</th>
+                            <th>Issue</th>
+                            <th>Priority</th>
+                            <th>Status</th>
+                        </tr>
+                    </thead>
+
+                    <tbody id="alertsTableBody"></tbody>
+
+                </table>
+
+            </section>
+
+
+
+            <!-- CITIZEN COMPLAINTS -->
+
+            <section class="table-card">
+
+                <h3>Citizen Complaints</h3>
+
+                <table>
+
+                    <thead>
+                        <tr>
+                            <th>User</th>
+                            <th>Ward</th>
+                            <th>Complaint</th>
+                            <th>Date</th>
+                            <th>Action</th>
+                        </tr>
+                    </thead>
+
+                    <tbody id="complaintsTableBody"></tbody>
+
+                </table>
+
+            </section>
+
+        </main>
+
+    </div>
+
+    <script>
+
+// =============================
+// AUTH PROTECTION
+// =============================
+const token = localStorage.getItem("token");
+if (!token) {
+  window.location.href = "/landing.html";
+}
+
+
+// =============================
+// LOAD SYSTEM ALERTS
+// =============================
+async function loadAlerts() {
+  try {
+
+    const res = await fetch("/api/alerts", {
+      headers: {
+        Authorization: "Bearer " + token
+      }
+    });
+
+    const alerts = await res.json();
+
+    const table = document.getElementById("alertsTableBody");
+    table.innerHTML = "";
+
+    let overflow = 0;
+
+    alerts.forEach(alert => {
+
+      if (alert.message && alert.message.toLowerCase().includes("overflow")) {
+        overflow++;
+      }
+
+      const row = document.createElement("tr");
+
+      row.innerHTML = `
+        <td>${new Date(alert.createdAt).toLocaleTimeString()}</td>
+        <td>${alert.ward || "N/A"}</td>
+        <td>${alert.message}</td>
+        <td class="high">High</td>
+        <td>${alert.status || "Open"}</td>
+      `;
+
+      table.appendChild(row);
+
+    });
+
+    document.getElementById("activeAlerts").textContent = alerts.length;
+    document.getElementById("overflowBins").textContent = overflow;
+
+  } catch (err) {
+    console.error("Error loading alerts:", err);
+  }
+}
+
+
+// =============================
+// LOAD COMPLAINTS
+// =============================
+async function loadComplaints() {
+  try {
+
+    const res = await fetch("/api/complaints", {
+      headers: {
+        Authorization: "Bearer " + token
+      }
+    });
+
+    const complaints = await res.json();
+
+    const table = document.getElementById("complaintsTableBody");
+    table.innerHTML = "";
+
+    complaints.forEach(c => {
+
+      const row = document.createElement("tr");
+
+      row.innerHTML = `
+        <td>${c.user || "Citizen"}</td>
+        <td>${c.ward || "N/A"}</td>
+        <td>${c.message}</td>
+        <td>${new Date(c.createdAt).toLocaleDateString()}</td>
+        <td><button onclick="resolveComplaint('${c._id}')">Resolve</button></td>
+      `;
+
+      table.appendChild(row);
+
+    });
+
+    document.getElementById("citizenComplaints").textContent = complaints.length;
+
+  } catch (err) {
+    console.error("Error loading complaints:", err);
+  }
+}
+
+
+// =============================
+// RESOLVE COMPLAINT
+// =============================
+async function resolveComplaint(id) {
+
+  try {
+
+    await fetch(`/api/complaints/${id}/resolve`, {
+      method: "PUT",
+      headers: {
+        "Content-Type": "application/json",
+        Authorization: "Bearer " + token
+      }
+    });
+
+    loadComplaints();
+
+  } catch (err) {
+    console.error("Error resolving complaint:", err);
+  }
+}
+
+
+// =============================
+// INITIAL LOAD
+// =============================
+loadAlerts();
+loadComplaints();
+
+    </script>
+
+</body>
+
+</html>

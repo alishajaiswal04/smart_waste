@@ -1,0 +1,327 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+<title>Smart Waste | Analytics</title>
+
+<link rel="stylesheet" href="/css/analytics.css">
+
+<!-- Libraries -->
+
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/particles.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/animejs/lib/anime.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
+
+</head>
+
+<body>
+
+<div id="particles-js"></div>
+<div id="three-bg"></div>
+
+<div class="layout">
+
+<!-- SIDEBAR -->
+
+<aside class="sidebar">
+
+<div class="logo" id="sidebarToggle">
+
+<div class="logo-box">SW</div>
+
+<div>
+<h2>Smart Waste</h2>
+<p>Admin Control Center</p>
+</div>
+
+</div>
+
+<p class="tagline">
+Monitor bins, optimize routes and keep your city clean.
+</p>
+
+<nav class="menu">
+
+<a href="index.html">📊 Dashboard</a>
+<a href="bin-monitoring.html">🗺️ Bin Monitoring</a>
+<a href="routes-trucks.html">🚚 Routes & Trucks</a>
+<a href="alerts.html">⚠ Alerts & Complaints</a>
+<a class="active" href="analytics.html">📈 Analytics & Reports</a>
+<!-- <a href="bin-management.html">🗑 Bin / Area Mgmt</a> -->
+<a href="settings.html">⚙ Settings</a>
+
+</nav>
+
+</aside>
+
+
+
+<!-- MAIN -->
+
+<main class="main">
+
+<header class="topbar">
+
+<div class="title">
+<h1>Analytics & Reports</h1>
+<p>City waste insights and performance metrics</p>
+</div>
+
+<div class="topbar-right">
+  <div class="user-chip">
+    <div class="user-avatar" id="user-avatar">--</div>
+    <div>
+      <div class="user-name" id="user-name">Loading...</div>
+      <div class="user-role" id="user-role">User</div>
+    </div>
+  </div>
+  <button class="logout">Logout</button>
+</div>
+
+</header>
+
+
+
+<!-- STATS -->
+
+<section class="stats">
+
+<div class="card">
+<h3>Total Waste Collected</h3>
+<h2 id="totalWaste">0 kg</h2>
+<p>This Week</p>
+</div>
+
+<div class="card">
+<h3>Average Bin Fill</h3>
+<h2 id="avgFill">0%</h2>
+<p>Across City</p>
+</div>
+
+<div class="card">
+<h3>Active Trucks</h3>
+<h2 id="activeTrucks">0</h2>
+<p>Currently Running</p>
+</div>
+
+<div class="card">
+<h3>Collection Efficiency</h3>
+<h2 id="efficiency">0%</h2>
+<p>Optimized Routes</p>
+</div>
+
+</section>
+
+
+
+<!-- CHARTS -->
+
+<section class="charts">
+
+<div class="chart-card">
+
+<h3>Waste Collection Trend</h3>
+
+<canvas id="wasteChart"></canvas>
+
+</div>
+
+<div class="chart-card">
+
+<h3>Bin Fill Distribution</h3>
+
+<canvas id="binChart"></canvas>
+
+</div>
+
+</section>
+
+
+
+<section class="chart-large">
+
+<h3>Truck Performance</h3>
+
+<canvas id="truckChart"></canvas>
+
+</section>
+
+
+
+<!-- REPORTS -->
+
+<section class="reports">
+
+<h3>Generate Reports</h3>
+
+<div class="buttons">
+
+<button onclick="downloadReport('daily')">Daily</button>
+<button onclick="downloadReport('weekly')">Weekly</button>
+<button onclick="downloadReport('monthly')">Monthly</button>
+
+</div>
+
+</section>
+
+</main>
+
+</div>
+
+<script>
+// Load logged-in user info
+const storedName = localStorage.getItem("name");
+const storedRole = localStorage.getItem("role");
+
+if (storedName) {
+  const nameEl = document.getElementById("user-name");
+  const avatarEl = document.getElementById("user-avatar");
+
+  if (nameEl) nameEl.innerText = storedName;
+
+  if (avatarEl) {
+    const initials = storedName
+      .split(" ")
+      .map(n => n[0])
+      .join("")
+      .toUpperCase()
+      .slice(0, 2);
+
+    avatarEl.innerText = initials;
+  }
+}
+
+if (storedRole) {
+  const roleEl = document.getElementById("user-role");
+  if (roleEl) roleEl.innerText = storedRole;
+}
+</script>
+<script>
+
+// =============================
+// AUTH PROTECTION
+// =============================
+const token = localStorage.getItem("token");
+if (!token) {
+  window.location.href = "/landing.html";
+}
+
+
+// =============================
+// LOAD ANALYTICS DATA
+// =============================
+async function loadAnalytics() {
+  try {
+
+    const res = await fetch("/api/dashboard", {
+      headers: {
+        Authorization: "Bearer " + token
+      }
+    });
+
+    const data = await res.json();
+
+    // Stats
+    document.getElementById("totalWaste").textContent = (data.totalWaste || 0) + " kg";
+    document.getElementById("avgFill").textContent = (data.avgFill || 0) + "%";
+    document.getElementById("activeTrucks").textContent = data.activeTrucks || 0;
+    document.getElementById("efficiency").textContent = (data.efficiency || 0) + "%";
+
+    // Charts
+    createWasteChart(data.wasteTrend || []);
+    createBinChart(data.binDistribution || {});
+    createTruckChart(data.truckPerformance || []);
+
+  } catch (err) {
+    console.error("Analytics load error:", err);
+  }
+}
+
+
+// =============================
+// WASTE TREND CHART
+// =============================
+function createWasteChart(trend) {
+
+  const labels = trend.map(t => t.day);
+  const values = trend.map(t => t.waste);
+
+  new Chart(document.getElementById("wasteChart"), {
+    type: "line",
+    data: {
+      labels,
+      datasets: [{
+        label: "Waste Collected (kg)",
+        data: values
+      }]
+    }
+  });
+}
+
+
+// =============================
+// BIN DISTRIBUTION CHART
+// =============================
+function createBinChart(dist) {
+
+  new Chart(document.getElementById("binChart"), {
+    type: "doughnut",
+    data: {
+      labels: ["Normal", "Warning", "Critical"],
+      datasets: [{
+        data: [
+          dist.normal || 0,
+          dist.warning || 0,
+          dist.critical || 0
+        ]
+      }]
+    }
+  });
+}
+
+
+// =============================
+// TRUCK PERFORMANCE CHART
+// =============================
+function createTruckChart(trucks) {
+
+  const labels = trucks.map(t => t.truckId);
+  const data = trucks.map(t => t.collections);
+
+  new Chart(document.getElementById("truckChart"), {
+    type: "bar",
+    data: {
+      labels,
+      datasets: [{
+        label: "Bins Collected",
+        data
+      }]
+    }
+  });
+}
+
+
+// =============================
+// REPORT DOWNLOAD
+// =============================
+function downloadReport(type) {
+
+  window.open(`/api/reports/${type}?token=${token}`);
+
+}
+
+
+// =============================
+// INITIAL LOAD
+// =============================
+loadAnalytics();
+
+</script>
+
+</body>
+</html>

@@ -1,0 +1,377 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8">
+  <title>Driver Dashboard</title>
+
+  <!-- Chart.js -->
+  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+
+  <!-- Leaflet -->
+  <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
+  <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+  <link rel="stylesheet" href="/css/styles.css">
+  <!-- Particle.js -->
+  <script src="https://cdn.jsdelivr.net/npm/particles.js@2.0.0/particles.min.js"></script>
+
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      margin: 0;
+      background: #ecfdf5;
+    }
+
+    .sidebar {
+      position: fixed;
+      width: 220px;
+      height: 100%;
+      background: #065f46;
+      color: white;
+      padding: 20px;
+    }
+
+    .sidebar h2 {
+      margin-top: 0;
+    }
+
+    .sidebar ul {
+      padding: 0;
+      list-style: none;
+    }
+
+    .sidebar ul li {
+      margin: 15px 0;
+    }
+
+    .sidebar ul li a {
+      color: white;
+      text-decoration: none;
+    }
+
+    .sidebar ul li a.active {
+      font-weight: bold;
+    }
+
+    .main {
+      margin-left: 240px;
+      padding: 20px;
+    }
+
+    .topbar {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 20px;
+    }
+
+    .kpi-container {
+      display: flex;
+      flex-direction: column;
+      gap: 20px;
+      margin-bottom: 20px;
+    }
+
+    .kpi-row {
+      display: flex;
+      gap: 20px;
+      flex-wrap: wrap;
+    }
+
+    .kpi-card {
+      flex: 1;
+      background: #dcfce7; /* greenish shade */
+      padding: 20px;
+      border-radius: 12px;
+      text-align: center;
+      box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+      color: #065f46;
+      font-weight: bold;
+    }
+
+    .glow {
+      box-shadow: 0 0 15px rgba(6, 95, 70, 0.6);
+    }
+
+    .charts-container {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 20px;
+      margin-bottom: 20px;
+    }
+
+    .charts-container .card {
+      flex: 1;
+      min-width: 300px;
+    }
+
+    .card {
+      background: #f1fdf8;
+      padding: 20px;
+      border-radius: 12px;
+      margin-bottom: 20px;
+      box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+    }
+
+    #alertsPanel li {
+      margin-bottom: 10px;
+      list-style: disc;
+    }
+
+    #particles-js {
+      position: fixed;
+      width: 100%;
+      height: 100%;
+      top: 0;
+      left: 0;
+      z-index: -1;
+    }
+
+    @media (max-width: 800px) {
+      .kpi-row {
+        flex-direction: column;
+      }
+    }
+  </style>
+</head>
+
+<body>
+
+  <!-- PARTICLE BACKGROUND -->
+  <div id="particles-js"></div>
+
+  <!-- SIDEBAR -->
+  <div class="sidebar">
+    <h2>♻ SmartWaste</h2>
+    <ul>
+      <li><a href="driver.html" class="active">Dashboard</a></li>
+      <li><a href="driver-route.html">My Route</a></li>
+      <li><a href="driver-pickups.html">Pickups</a></li>
+      <li><a href="driver-alerts.html">Alerts</a></li>
+      <li><a href="driver-history.html">History</a></li>
+    </ul>
+  </div>
+
+  <!-- MAIN -->
+  <div class="main">
+    <div class="topbar">
+      <h1>Dashboard</h1>
+      <span id="topbar-date"></span>
+    </div>
+
+    <!-- KPI CARDS -->
+    <div class="kpi-container">
+      <div class="kpi-row">
+        <div class="kpi-card glow">
+          <h3>Total Bins Today</h3>
+          <p id="totalBins">0</p>
+        </div>
+        <div class="kpi-card glow">
+          <h3>Alert Bins</h3>
+          <p id="alertBins">0</p>
+        </div>
+        <div class="kpi-card glow">
+          <h3>Bins Collected</h3>
+          <p id="collectedBins">0</p>
+        </div>
+      </div>
+      <div class="kpi-row">
+        <div class="kpi-card glow">
+          <h3>Bins Remaining</h3>
+          <p id="remainingBins">0</p>
+        </div>
+        <div class="kpi-card glow">
+          <h3>Truck Fill</h3>
+          <p id="truckFillPercent">0%</p>
+        </div>
+        <div class="kpi-card glow">
+          <h3>Next Pickup ETA</h3>
+          <p id="nextPickup">--:--:--</p>
+        </div>
+      </div>
+    </div>
+
+    <!-- URGENT ALERTS -->
+    <div class="card glow">
+      <h2>Urgent Alerts</h2>
+      <ul id="alertsPanel" style="max-height:200px; overflow-y:auto;"></ul>
+    </div>
+
+    <!-- CHARTS -->
+    <div class="charts-container">
+      <div class="card glow">
+        <h2>Bin Status (Pie Chart)</h2>
+        <canvas id="pieChart" style="max-width:100%; height:300px;"></canvas>
+      </div>
+      <div class="card glow">
+        <h2>Bins Collected Over Time (Line Chart)</h2>
+        <canvas id="lineChart" style="max-width:100%; height:300px;"></canvas>
+      </div>
+    </div>
+
+    <div class="card glow">
+      <h2>Bins by Location (Bar Chart)</h2>
+      <canvas id="barChart" style="max-width:100%; height:300px;"></canvas>
+    </div>
+
+    <!-- MINI MAP -->
+    <div class="card glow">
+      <h2>Bin Hotspots</h2>
+      <div id="dashboardMap" style="height:300px;"></div>
+    </div>
+  </div>
+
+  <script>
+// =============================
+// AUTH PROTECTION
+// =============================
+const token = localStorage.getItem("token");
+if (!token) {
+  window.location.href = "/landing.html";
+}
+
+// =============================
+// DATE IN TOPBAR
+// =============================
+document.getElementById("topbar-date").textContent = new Date().toLocaleString();
+
+// =============================
+// MAP INITIALIZATION
+// =============================
+const map = L.map("dashboardMap").setView([19.9975, 73.7898], 13);
+
+L.tileLayer("https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png", {
+  maxZoom: 19
+}).addTo(map);
+
+// =============================
+// LOAD BINS FROM BACKEND
+// =============================
+async function loadBins() {
+  try {
+    const res = await fetch("/api/bins", {
+      headers: {
+        Authorization: "Bearer " + token
+      }
+    });
+
+    const bins = await res.json();
+
+    let total = bins.length;
+    let alerts = 0;
+    let collected = 0;
+
+    const locationCount = {};
+
+    bins.forEach(bin => {
+      const lat = bin.latitude;
+      const lng = bin.longitude;
+
+      if (bin.fillLevel >= 90) alerts++;
+      if (bin.collected) collected++;
+
+      const area = bin.area || "Unknown";
+      locationCount[area] = (locationCount[area] || 0) + 1;
+
+      if (lat && lng) {
+        const marker = L.marker([lat, lng]).addTo(map);
+        marker.bindPopup(`<b>${bin.binId}</b><br>Fill: ${bin.fillLevel}%`);
+      }
+    });
+
+    document.getElementById("totalBins").textContent = total;
+    document.getElementById("alertBins").textContent = alerts;
+    document.getElementById("collectedBins").textContent = collected;
+    document.getElementById("remainingBins").textContent = total - collected;
+
+    createCharts(bins, locationCount);
+
+  } catch (err) {
+    console.error("Error loading bins:", err);
+  }
+}
+
+// =============================
+// LOAD ALERTS
+// =============================
+async function loadAlerts() {
+  try {
+    const res = await fetch("/api/alerts", {
+      headers: {
+        Authorization: "Bearer " + token
+      }
+    });
+
+    const alerts = await res.json();
+
+    const list = document.getElementById("alertsPanel");
+    list.innerHTML = "";
+
+    alerts.slice(0,10).forEach(alert => {
+      const li = document.createElement("li");
+      li.textContent = alert.message || "Critical bin alert";
+      list.appendChild(li);
+    });
+
+  } catch (err) {
+    console.error("Error loading alerts:", err);
+  }
+}
+
+// =============================
+// CHARTS
+// =============================
+function createCharts(bins, locationCount) {
+
+  const normal = bins.filter(b => b.fillLevel < 70).length;
+  const warning = bins.filter(b => b.fillLevel >= 70 && b.fillLevel < 90).length;
+  const critical = bins.filter(b => b.fillLevel >= 90).length;
+
+  new Chart(document.getElementById("pieChart"), {
+    type: "pie",
+    data: {
+      labels: ["Normal", "Warning", "Critical"],
+      datasets: [{
+        data: [normal, warning, critical]
+      }]
+    }
+  });
+
+  const hours = ["6AM","8AM","10AM","12PM","2PM","4PM","6PM"];
+  const collectedData = hours.map(() => Math.floor(Math.random()*10));
+
+  new Chart(document.getElementById("lineChart"), {
+    type: "line",
+    data: {
+      labels: hours,
+      datasets: [{
+        label: "Bins Collected",
+        data: collectedData
+      }]
+    }
+  });
+
+  const areas = Object.keys(locationCount);
+  const counts = Object.values(locationCount);
+
+  new Chart(document.getElementById("barChart"), {
+    type: "bar",
+    data: {
+      labels: areas,
+      datasets: [{
+        label: "Bins",
+        data: counts
+      }]
+    }
+  });
+}
+
+// =============================
+// INITIAL LOAD
+// =============================
+loadBins();
+loadAlerts();
+  </script>
+</body>
+
+</html>

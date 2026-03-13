@@ -1,0 +1,326 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <title>Smart Waste | Smarter Cities, Cleaner Future</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+
+ <link rel="stylesheet" href="/css/landing.css">
+</head>
+<body>
+
+  <!-- Background effects -->
+  <div id="three-bg"></div>
+  <div id="particles-js"></div>
+
+  <!-- Header / Navbar -->
+  <header class="landing-header">
+    <div class="brand">
+      <div class="logo">SW</div>
+      <span>Smart Waste</span>
+    </div>
+
+    <nav class="nav-links">
+      <a href="#home">Home</a>
+      <a href="#about">About</a>
+      <a href="#features">Features</a>
+      <a href="#contact">Contact</a>
+    </nav>
+
+    <button class="login-btn" onclick="openAuth()">
+      Login
+    </button>
+  </header>
+
+  <!-- Hero Section -->
+  <section class="hero" id="home">
+    <h1>Smarter Cities,<br><span>Cleaner Future</span></h1>
+    <p>
+      Smart Waste uses real-time sensors, intelligent routing,
+      and analytics to optimize waste collection and keep cities clean.
+    </p>
+
+    <div class="hero-actions">
+      <button class="primary-btn"
+              onclick="openAuth()">
+        Get Started
+      </button>
+      <button class="secondary-btn" onclick="scrollToAbout()">
+        Learn More
+      </button>
+    </div>
+  </section>
+
+  <section class="about" id="about">
+  <h2>About Smart Waste</h2>
+  <p class="about-intro">
+    Smart Waste is an intelligent waste management platform aligned with
+    the United Nations Sustainable Development Goals (SDGs).
+    It helps cities reduce pollution, optimize resources, and build
+    cleaner, more sustainable communities.
+  </p>
+
+  <!-- Core system cards -->
+  <div class="about-cards">
+    <div class="about-card">
+      📡
+      <h3>Real-time Monitoring</h3>
+      <p>
+        IoT-enabled bins provide live fill-level data to prevent overflow
+        and unnecessary collection trips.
+      </p>
+    </div>
+    <div class="about-card">
+      🚚
+      <h3>Smart Route Optimization</h3>
+      <p>
+        Rule-based and AI-assisted scheduling reduces fuel usage,
+        emissions, and operational cost.
+      </p>
+    </div>
+    <div class="about-card">
+      📊
+      <h3>Data-driven Decisions</h3>
+      <p>
+        Analytics dashboards help municipalities plan capacity,
+        predict waste patterns, and improve efficiency.
+      </p>
+    </div>
+  </div>
+
+  <!-- SDG Section -->
+  <div class="sdg-section">
+    <h3>Aligned with UN Sustainable Development Goals</h3>
+
+    <div class="sdg-cards">
+      <div class="sdg-card sdg-11">
+        <span class="sdg-badge">SDG 11</span>
+        <h4>Sustainable Cities & Communities</h4>
+        <p>
+          Improves urban cleanliness, optimizes waste collection,
+          and supports smart city infrastructure.
+        </p>
+      </div>
+
+      <div class="sdg-card sdg-12">
+        <span class="sdg-badge">SDG 12</span>
+        <h4>Responsible Consumption & Production</h4>
+        <p>
+          Encourages waste se
+          gregation, recycling awareness,
+          and efficient use of resources.
+        </p>
+      </div>
+
+      <div class="sdg-card sdg-13">
+        <span class="sdg-badge">SDG 13</span>
+        <h4>Climate Action</h4>
+        <p>
+          Reduces fuel consumption, carbon emissions,
+          and environmental impact of waste operations.
+        </p>
+      </div>
+    </div>
+  </div>
+</section>
+
+
+  <!-- Features -->
+  <section class="features" id="features">
+    <h2>Who Is It For?</h2>
+
+    <div class="feature-grid">
+      <div class="feature">
+        🧑‍💼
+        <h3>Admins</h3>
+        <p>Monitor bins, manage routes, and analyze performance.</p>
+      </div>
+      <div class="feature">
+        🧑‍🔧
+        <h3>Drivers</h3>
+        <p>Clear routes, live updates, and optimized pickups.</p>
+      </div>
+      <div class="feature">
+        🏘️
+        <h3>Citizens</h3>
+        <p>Raise complaints and track cleanliness in your area.</p>
+      </div>
+    </div>
+  </section>
+
+  <!-- Call to action -->
+  <section class="cta">
+    <h2>Ready to Make Your City Smarter?</h2>
+    <button class="primary-btn"
+            onclick="openAuth()">
+      Login to Dashboard
+    </button>
+  </section>
+
+  <!-- CONTACT SECTION -->
+<section id="contact" class="contact">
+  <div class="contact-container">
+
+    <h2>Contact & Support</h2>
+    <p class="contact-subtext">
+      We're here to help you. Connect with us anytime for assistance.
+    </p>
+
+    <div class="contact-grid">
+
+      <div class="contact-card">
+        <h3>Customer Support</h3>
+        <p>Facing issues or general queries?</p>
+        <ul>
+          <li>Email: support@smartwaste.in</li>
+          <li>Phone: +91 9078-112-445</li>
+          <li>Live Chat: Mon–Sat · 9AM‒8PM</li>
+        </ul>
+      </div>
+
+      <div class="contact-card">
+        <h3>Technical Assistance</h3>
+        <p>Hardware, dashboard or API issues</p>
+        <ul>
+          <li>Email: tech@smartwaste.in</li>
+          <li>Phone: +91 8879-315-229</li>
+          <li>Remote support available</li>
+        </ul>
+      </div>
+
+      <div class="contact-card">
+        <h3>Partnership / Municipality Support</h3>
+        <p>For Smart City pilots, tenders & demo requests</p>
+        <ul>
+          <li>Email: gov-relations@smartwaste.in</li>
+          <li>Phone: +91 9981-772-453</li>
+          <li>Office Hours: Mon-Fri · 10AM–5PM</li>
+        </ul>
+      </div>
+
+    </div>
+
+    <div class="contact-footer-note">
+      Looking for FAQs or docs?
+      <br>
+      <a href="#">Visit Help Center →</a>
+    </div>
+
+  </div>
+</section>
+
+  <!-- FOOTER  -->
+<footer class="footer">
+  <div class="footer-top">
+
+    <div class="footer-col">
+      <h4>Get to Know Us</h4>
+      <a href="#">About SmartWaste</a>
+      <a href="#">Our Vision</a>
+      <a href="#">SDG Goals</a>
+      <a href="#">Research & Innovation</a>
+      <a href="#">Sustainability</a>
+    </div>
+
+    <div class="footer-col">
+      <h4>Connect With Us</h4>
+      <a href="#">Instagram</a>
+      <a href="#">LinkedIn</a>
+      <a href="#">YouTube</a>
+      <a href="#">Twitter</a>
+      <a href="#">Facebook</a>
+    </div>
+
+    <div class="footer-col">
+      <h4>Make Money With Us</h4>
+      <a href="#">Partner With Us</a>
+      <a href="#">Smart Bin Distributor Program</a>
+      <a href="#">Pilot Smart City Program</a>
+      <a href="#">Municipal Integrations</a>
+    </div>
+
+    <div class="footer-col">
+      <h4>Help & Support</h4>
+      <a href="#">Customer Support</a>
+      <a href="#">Technical Support</a>
+      <a href="#">Help Center</a>
+      <a href="#">Feedback</a>
+      <a href="#">Policies</a>
+    </div>
+
+  </div>
+
+  <div class="footer-bottom">
+    <div class="footer-logo">SmartWaste</div>
+
+    <div class="footer-country">
+      🌍 India | English (IN)
+    </div>
+
+    <div class="footer-legal">
+      <a href="#">Terms of Service</a>
+      <a href="#">Privacy Policy</a>
+      <a href="#">Cookies</a>
+      <a href="#">Licenses</a>
+    </div>
+
+    <p class="footer-copy">
+      © 2025 SmartWaste | Smart India Hackathon Project | Improving Sustainability through IoT & Data
+    </p>
+  </div>
+</footer>
+
+
+  <!-- Libraries -->
+  <script src="https://cdn.jsdelivr.net/npm/three@0.152.2/build/three.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/particles.js@2.0.0/particles.min.js"></script>
+
+  <!-- JS -->
+  <script src="/js/landing.js"></script>
+  
+  <!-- AUTH MODAL OVERLAY -->
+<div id="authOverlay" class="auth-overlay">
+
+  <div class="auth-card">
+    <button class="close-btn" onclick="closeAuth()">×</button>
+
+    <h2>Smart Waste Login</h2>
+    <p class="subtitle">Access your dashboard</p>
+
+    <!-- Tabs -->
+    <div class="auth-tabs">
+      <button class="tab active" onclick="switchTab('signin')">Sign In</button>
+      <button class="tab" onclick="switchTab('signup')">Sign Up</button>
+    </div>
+
+    <!-- Roles -->
+    <div class="role-selector">
+      <button class="role active" onclick="selectRole('admin')">Admin</button>
+      <button class="role" onclick="selectRole('driver')">Driver</button>
+      <button class="role" onclick="selectRole('citizen')">Citizen</button>
+    </div>
+
+    <!-- Sign In -->
+    <form id="signin" class="auth-form active">
+      <input type="email" placeholder="Email" required />
+      <input type="password" placeholder="Password" required />
+      <div class="extra">
+        <label><input type="checkbox"> Remember me</label>
+        <a href="#">Forgot password?</a>
+      </div>
+      <button type="submit" class="primary-btn">Login</button>
+    </form>
+
+    <!-- Sign Up -->
+    <form id="signup" class="auth-form">
+      <input type="text" placeholder="Full Name" required />
+      <input type="email" placeholder="Email" required />
+      <input type="password" placeholder="Password" required />
+      <button type="submit" class="primary-btn">Create Account</button>
+    </form>
+
+  </div>
+</div>
+
+</body>
+</html>
