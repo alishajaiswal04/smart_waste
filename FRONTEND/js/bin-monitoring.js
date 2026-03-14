@@ -21,24 +21,38 @@ async function loadBins() {
     const res = await fetch("/api/bins");
     const data = await res.json();
 
+    // determine map bounds dynamically from database coordinates
+    const lats = data.map(b => b.latitude);
+    const lons = data.map(b => b.longitude);
+
+    const MIN_LAT = Math.min(...lats);
+    const MAX_LAT = Math.max(...lats);
+    const MIN_LON = Math.min(...lons);
+    const MAX_LON = Math.max(...lons);
+
     // convert backend bins to frontend format
-    bins = data.map((b, i) => ({
-      id: b.binId,
-      area: "ward-" + ((i % 3) + 1),
-      areaLabel: "Ward " + ((i % 3) + 1),
-      type: "public",
-      typeLabel: "Smart Bin",
-      fill: b.fillLevel,
-      status: b.status.toLowerCase(),
-      coords: {
-        left: 20 + (i * 10 % 70) + "%",
-        top: 20 + (i * 7 % 60) + "%"
-      },
-      lastCollected: new Date(b.lastCollected).toLocaleString(),
-      avgDailyKg: 20 + (i * 5),
-      sensorStatus: "Online",
-      notes: b.location
-    }));
+    bins = data.map((b, i) => {
+      const latRatio = (b.latitude - MIN_LAT) / (MAX_LAT - MIN_LAT || 1);
+      const lonRatio = (b.longitude - MIN_LON) / (MAX_LON - MIN_LON || 1);
+
+      return {
+        id: b.binId,
+        area: "ward-" + ((i % 3) + 1),
+        areaLabel: "Ward " + ((i % 3) + 1),
+        type: "public",
+        typeLabel: "Smart Bin",
+        fill: b.fillLevel,
+        status: b.status.toLowerCase(),
+        coords: {
+          left: (lonRatio * 70 + 20) + "%",
+          top: (latRatio * 60 + 20) + "%"
+        },
+        lastCollected: new Date(b.lastCollected).toLocaleString(),
+        avgDailyKg: 20 + (i * 5),
+        sensorStatus: "Online",
+        notes: b.location
+      };
+    });
 
     reRender();
   } catch (err) {

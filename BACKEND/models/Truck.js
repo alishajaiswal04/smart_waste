@@ -19,4 +19,4 @@ const truckSchema = new mongoose.Schema({
 
 });
 
-module.exports = mongoose.model("Truck", truckSchema);
+module.exports = mongoose.models.Truck || mongoose.model("Truck", truckSchema);

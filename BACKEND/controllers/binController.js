@@ -1,16 +1,20 @@
 const Bin = require("../models/Bin");
 const Alert = require("../models/alert");
-
+const axios = require("axios");
 exports.updateBinStatus = async (req, res) => {
   try {
 
     const { binId, fillLevel } = req.body;
 
+    if (!binId || fillLevel === undefined) {
+      return res.status(400).json({ message: "binId and fillLevel are required" });
+    }
+
     // update database
     const bin = await Bin.findOneAndUpdate(
-      { binId },
-      { fillLevel, lastCollected: new Date() },
-      { returnDocument: 'after' }
+      { binId: binId },
+      { $set: { fillLevel: fillLevel, lastCollected: new Date() } },
+      { new: true }
     );
 
     if (!bin) {

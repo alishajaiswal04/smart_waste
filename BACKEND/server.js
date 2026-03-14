@@ -7,7 +7,8 @@ const authRoutes = require("./routes/authRoutes");
 const dashboardRoutes = require("./routes/dashboardRoutes");
 const alertRoutes = require("./routes/alertRoutes");
 const truckRoutes = require("./routes/truckRoutes");
-
+const aiRoutes = require("./routes/aiRoutes");
+app.use("/api/ai", aiRoutes);
 
 const http = require("http");
 const socket = require("./socket");

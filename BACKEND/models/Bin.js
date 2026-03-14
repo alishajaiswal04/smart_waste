@@ -12,7 +12,7 @@ const binSchema = new mongoose.Schema({
     type: String,
     required: true
   },
-
+  
   fillLevel: {
     type: Number,
     default: 0
@@ -30,7 +30,9 @@ const binSchema = new mongoose.Schema({
   },
   latitude: Number,
 
-  longitude: Number
+  longitude: Number,
+  waste_weight_kg: Number,
+  capacity_kg: Number,
 });
 
 module.exports = mongoose.model("Bin", binSchema);

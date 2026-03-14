@@ -128,8 +128,9 @@ setIfExists("kpi-fuel-saving", kpiData.fuelSavingPct + "%");
 
 async function loadDispatchPlan() {
   try {
-    const res = await fetch("/api/trucks/dispatch-plan");
-    const plans = await res.json();
+    const res = await fetch("/api/ai/cluster");
+    const data = await res.json();
+    const plans = data.dispatchPlan || [];
 
     const tableBody = document.querySelector("#dispatch-plan-table tbody");
     if (!tableBody) return;
@@ -160,8 +161,11 @@ async function loadDispatchPlan() {
   }
 }
 
-// run when page loads
-loadDispatchPlan();
+// run when page loads: load bins first, then dispatch plan
+loadBins().then(() => {
+  loadDispatchPlan();
+  setInterval(loadDispatchPlan, 10000);
+});
 
 // =============================
 // REAL-TIME TRUCK + BIN MAP
@@ -172,11 +176,18 @@ if (typeof L !== "undefined") {
   const socket = io("http://localhost:8080");
 
   // Initialize map
-  const map = L.map("truckMap").setView([19.9975, 73.7898], 13);
+  let map;
 
-  L.tileLayer("https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png", {
-    attribution: "© OpenStreetMap"
-  }).addTo(map);
+  if (window.map) {
+    map = window.map;
+  } else {
+    map = L.map("truckMap").setView([19.9975, 73.7898], 13);
+    window.map = map;
+
+    L.tileLayer("https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png", {
+      attribution: "© OpenStreetMap"
+    }).addTo(map);
+  }
 
   const truckMarkers = {};
   const binMarkers = {};
@@ -211,13 +222,13 @@ if (typeof L !== "undefined") {
           .bindPopup(`<b>${bin.binId}</b><br>Fill: ${bin.fillLevel}%`);
 
       });
-
+      return bins;
     } catch (err) {
       console.error("Failed loading bins:", err);
     }
   }
 
-  loadBins();
+  // loadBins(); // Now called on page load above, before dispatch plan
 
   // Listen for truck GPS updates
   socket.on("truck-location", (truck) => {

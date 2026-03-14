@@ -399,7 +399,7 @@
                     <th>Bins Assigned</th>
                   </tr>
                 </thead>
-                <tbody>
+                <tbody id="dispatch-table-body">
                   <!-- Filled dynamically from ML dispatch output -->
                 </tbody>
               </table>
@@ -460,16 +460,29 @@
   const socket = io();
 
   // Map center (Nashik demo)
-  const map = L.map('truckMap').setView([19.9975, 73.7898], 13);
+  let map;
+  const mapContainer = document.getElementById("truckMap");
 
-  L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
-    attribution: '© OpenStreetMap'
+if (mapContainer._leaflet_id) {
+  // map already created somewhere else (e.g. route-truck.js)
+  map = window.truckMapInstance;
+  window.map = map;
+} else {
+
+  map = L.map("truckMap").setView([19.9975, 73.7898], 13);
+  window.truckMapInstance = map;
+  window.map = map;
+
+  L.tileLayer("https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png", {
+    attribution: "© OpenStreetMap"
   }).addTo(map);
+}
 
   const truckMarkers = {};
   const binMarkers = {};
   const routeLines = {};
   const binPositions = [];
+  const binAreaMap = {};
 
   // Demo depot location
   const depot = [19.995, 73.785];
@@ -579,7 +592,8 @@
           );
         binPositions.push([lat, lng]);
         binMarkers[bin.binId] = marker;
-
+        // store area/location for dispatch table
+        binAreaMap[bin.binId] = bin.area || bin.location || "";
       });
 
     } catch (err) {
@@ -587,7 +601,88 @@
     }
   }
 
-  loadBins();
+  // Load AI dispatch plan from backend API
+  async function loadDispatchPlan() {
+    try {
+
+      const res = await fetch("/api/ai/cluster");
+      const data = await res.json();
+
+      const table = document.getElementById("dispatch-table-body");
+      if (!table) return;
+
+      table.innerHTML = "";
+
+      if (!data.dispatchPlan) return;
+
+      const clusterColors = [
+        "#3b82f6",
+        "#22c55e",
+        "#f97316",
+        "#a855f7",
+        "#ef4444",
+        "#14b8a6"
+      ];
+
+      data.dispatchPlan.forEach(plan => {
+
+        const row = document.createElement("tr");
+
+        const areaName =
+          plan.area ||
+          (plan.bins && plan.bins.length ? binAreaMap[plan.bins[0]] : "") ||
+          `Cluster ${plan.cluster}`;
+        const truckLabel = plan.driver
+          ? `${plan.truck} (${plan.driver})`
+          : plan.truck;
+
+        row.innerHTML = `
+          <td>${plan.cluster}</td>
+          <td>${areaName}</td>
+          <td>${truckLabel}</td>
+          <td>${plan.truck_capacity}</td>
+          <td>${plan.total_waste}</td>
+          <td>${plan.bins.join(", ")}</td>
+        `;
+
+        table.appendChild(row);
+
+        // color bins on map according to cluster
+        const color = clusterColors[plan.cluster % clusterColors.length];
+
+        plan.bins.forEach(binId => {
+          if (binMarkers[binId]) {
+            binMarkers[binId].setIcon(
+              L.divIcon({
+                className: "cluster-bin",
+                html: `<div style="
+                  width:16px;
+                  height:16px;
+                  border-radius:50%;
+                  background:${color};
+                  border:2px solid white;
+                "></div>`
+              })
+            );
+          }
+        });
+
+      });
+
+    } catch (err) {
+      console.error("Dispatch load error:", err);
+    }
+  }
+
+  // load data when page loads
+  loadBins().then(() => {
+    loadDispatchPlan();
+  });
+
+  // refresh dispatch plan every 10 seconds so DB changes appear in UI
+  setInterval(() => {
+    loadDispatchPlan();
+  }, 10000);
   </script>
 </body>
 
