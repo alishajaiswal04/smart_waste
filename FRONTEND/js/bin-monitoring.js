@@ -195,44 +195,6 @@ if (typeof io !== "undefined") {
   });
 }
 
-// === particles.js background ===
-particlesJS("particles-js", {
-  particles: {
-    number: { value: 60, density: { enable: true, value_area: 900 } },
-    color: { value: ["#22c55e", "#0ea5e9", "#a3e635"] },
-    shape: { type: "circle" },
-    opacity: { value: 0.4, random: false },
-    size: { value: 3, random: true },
-    line_linked: {
-      enable: true,
-      distance: 130,
-      color: "#a5b4fc",
-      opacity: 0.3,
-      width: 1
-    },
-    move: {
-      enable: true,
-      speed: 1.3,
-      direction: "none",
-      random: false,
-      straight: false,
-      out_mode: "out",
-      bounce: false
-    }
-  },
-  interactivity: {
-    detect_on: "canvas",
-    events: {
-      onhover: { enable: true, mode: "grab" },
-      onclick: { enable: false },
-      resize: true
-    },
-    modes: {
-      grab: { distance: 150, line_linked: { opacity: 0.6 } }
-    }
-  },
-  retina_detect: true
-});
 
 // === anime.js entrance animation ===
 window.addEventListener("load", () => {

@@ -1,104 +1,80 @@
-// BAR CHART
+document.addEventListener("DOMContentLoaded", function () {
 
-const barCtx = document.getElementById("barChart");
+  // ===== BAR CHART =====
+  const barCanvas = document.getElementById("barChart");
 
-new Chart(barCtx, {
+  if (barCanvas && typeof Chart !== "undefined") {
+    const barCtx = barCanvas.getContext("2d");
 
-type: "bar",
-
-data: {
-
-labels: ["Mon","Tue","Wed","Thu","Fri","Sat"],
-
-datasets: [{
-
-label: "Bins Collected",
-
-data: [5,7,6,8,4,9],
-
-backgroundColor: "#22c55e"
-
-}]
-
-},
-
-options: {
-
-responsive:true,
-
-plugins:{
-legend:{display:false}
-}
-
-}
-
-});
+    new Chart(barCtx, {
+      type: "bar",
+      data: {
+        labels: ["Mon", "Tue", "Wed", "Thu", "Fri", "Sat"],
+        datasets: [{
+          label: "Bins Collected",
+          data: [5, 7, 6, 8, 4, 9],
+          backgroundColor: "#22c55e"
+        }]
+      },
+      options: {
+        responsive: true,
+        plugins: {
+          legend: { display: false }
+        }
+      }
+    });
+  }
 
 
-// PIE CHART
+  // ===== PIE CHART =====
+  const pieCanvas = document.getElementById("pieChart");
 
-const pieCtx = document.getElementById("pieChart");
+  if (pieCanvas && typeof Chart !== "undefined") {
+    const pieCtx = pieCanvas.getContext("2d");
 
-new Chart(pieCtx, {
-
-type: "pie",
-
-data: {
-
-labels: ["Organic","Plastic","Metal","Other"],
-
-datasets: [{
-
-data: [45,25,15,15],
-
-backgroundColor:[
-"#22c55e",
-"#3b82f6",
-"#f59e0b",
-"#ef4444"
-]
-
-}]
-
-},
-
-options:{
-responsive:true
-}
-
-});
+    new Chart(pieCtx, {
+      type: "pie",
+      data: {
+        labels: ["Organic", "Plastic", "Metal", "Other"],
+        datasets: [{
+          data: [45, 25, 15, 15],
+          backgroundColor: [
+            "#22c55e",
+            "#3b82f6",
+            "#f59e0b",
+            "#ef4444"
+          ]
+        }]
+      },
+      options: {
+        responsive: true
+      }
+    });
+  }
 
 
-
-// PARTICLES BACKGROUND
-
-particlesJS("particles-js", {
-
-particles:{
-
-number:{value:70},
-
-color:{value:"#22c55e"},
-
-shape:{type:"circle"},
-
-opacity:{value:0.5},
-
-size:{value:3},
-
-line_linked:{
-enable:true,
-distance:150,
-color:"#22c55e",
-opacity:0.4,
-width:1
-},
-
-move:{
-enable:true,
-speed:2
-}
-
-}
+  // ===== PARTICLES BACKGROUND =====
+  if (typeof particlesJS !== "undefined") {
+    particlesJS("particles-js", {
+      particles: {
+        number: { value: 70 },
+        color: { value: "#22c55e" },
+        shape: { type: "circle" },
+        opacity: { value: 0.5 },
+        size: { value: 3 },
+        line_linked: {
+          enable: true,
+          distance: 150,
+          color: "#22c55e",
+          opacity: 0.4,
+          width: 1
+        },
+        move: {
+          enable: true,
+          speed: 2
+        }
+      }
+    });
+  }
 
 });

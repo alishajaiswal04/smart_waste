@@ -124,19 +124,18 @@ document.addEventListener("DOMContentLoaded", () => {
         localStorage.setItem("token", data.token);
         localStorage.setItem("name", data.name);
         localStorage.setItem("role", data.role);
+        localStorage.setItem("driver", data.name); // store driver name for driver dashboard
 
         // redirect based on role
         if (data.role === "admin") {
           window.location.href = "/index.html";
         }
-
-        // if (data.role === "driver") {
-        //   window.location.href = "/routes-trucks.html";
-        // }
-
-        // if (data.role === "citizen") {
-        //   window.location.href = "/complaints.html";
-        // }
+        if (data.role === "driver") {
+          window.location.href = "/driver.html";
+        }
+        if (data.role === "citizen") {
+          window.location.href = "/complaints.html";
+        }
       } else {
         alert(data.message);
       }

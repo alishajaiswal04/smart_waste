@@ -1,97 +1,84 @@
 document.addEventListener("DOMContentLoaded", () => {
-// PARTICLES
-particlesJS("particles-js", {
-  particles: {
-    number: { value: 80 },
-    color: { value: "#22c55e" },
-    shape: { type: "circle" },
-    opacity: { value: 0.5 },
-    size: { value: 3 },
-    line_linked: { enable: true, distance: 150, color: "#22c55e", opacity: 0.4, width: 1 },
-    move: { enable: true, speed: 2 }
-  }
-});
 
-// CREATE MAP
-const map = L.map("routeMap").setView([20.0, 73.79], 12);
-L.tileLayer("https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png", {
-  maxZoom: 19
-}).addTo(map);
+  // =============================
+  // CREATE MAP
+  // =============================
+  const map = L.map("routeMap").setView([22.5726, 88.3639], 12);
 
-// Assuming loadRoute function exists and bins data is available
-function loadRoute(bins) {
-  const routePoints = [];
-  const bounds = [];
+  L.tileLayer("https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png", {
+    maxZoom: 19
+  }).addTo(map);
 
-  bins.forEach(bin => {
+  // =============================
+  // LOAD DRIVER ROUTE FROM BACKEND
+  // =============================
+  async function initRoute() {
+    try {
 
-    if (!bin.latitude || !bin.longitude) return;
+      const token = localStorage.getItem("token");
+      const driver = localStorage.getItem("driver");
 
-    const point = [bin.latitude, bin.longitude];
+      const res = await fetch(`/api/driver/route/${driver}`, {
+        headers: {
+          Authorization: "Bearer " + token
+        }
+      });
 
-    bounds.push(point);
+      const data = await res.json();
 
-    // marker color based on fill level
-    let color = "green";
-    if (bin.fillLevel >= 90) color = "red";
-    else if (bin.fillLevel >= 70) color = "orange";
+      console.log("Driver route data:", data);
 
-    const marker = L.circleMarker(point, {
-      radius: 8,
-      color,
-      fillColor: color,
-      fillOpacity: 0.9
-    }).addTo(map);
+      const bins = data.bins || [];
 
-    marker.bindPopup(`<b>${bin.binId}</b><br>${bin.location}<br>Fill: ${bin.fillLevel}%`);
+      loadRoute(bins);
 
-    // critical bins form the route
-    if (bin.fillLevel >= 90) {
-      routePoints.push(point);
+    } catch (err) {
+      console.error("Error loading route:", err);
     }
-
-  });
-
-  if (bounds.length) {
-    map.fitBounds(bounds);
   }
 
-  if (routePoints.length >= 2) {
-    const routeLine = L.polyline(routePoints, { color: "green", weight: 4 }).addTo(map);
-  }
-}
+  // =============================
+  // DRAW ROUTE + MARKERS
+  // =============================
+  function loadRoute(bins) {
 
-// =============================
-// LOAD BINS FROM BACKEND
-// =============================
-async function initRoute() {
-  try {
+    const routePoints = [];
+    const bounds = [];
 
-    const token = localStorage.getItem("token");
+    bins.forEach((bin, index) => {
 
-    const res = await fetch("/api/bins", {
-      headers: {
-        Authorization: "Bearer " + token
-      }
+      if (!bin.latitude || !bin.longitude) return;
+
+      const point = [bin.latitude, bin.longitude];
+
+      bounds.push(point);
+      routePoints.push(point);
+
+      const marker = L.marker(point).addTo(map);
+
+      marker.bindPopup(
+        `<b>Bin:</b> ${bin.binId}<br>
+         <b>Location:</b> ${bin.latitude}, ${bin.longitude}`
+      );
+
     });
 
-    const bins = await res.json();
+    if (bounds.length) {
+      map.fitBounds(bounds);
+    }
 
-    console.log("Bins received for route:", bins);
+    if (routePoints.length >= 2) {
+      L.polyline(routePoints, { color: "green", weight: 4 }).addTo(map);
+    }
 
-    loadRoute(bins);
-
-  } catch (err) {
-    console.error("Error loading route:", err);
   }
-}
 
-// run on page load
-initRoute();
+  // start loading route
+  initRoute();
 
-// Fix map rendering when container loads
-setTimeout(() => {
-  map.invalidateSize();
-}, 300);
+  // fix map rendering
+  setTimeout(() => {
+    map.invalidateSize();
+  }, 300);
 
 });

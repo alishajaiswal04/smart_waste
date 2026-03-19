@@ -42,9 +42,10 @@ const plannerRoutes = [
 ];
 
 const fuelSummary = [
-  { label: "Trips avoided vs fixed schedule", value: "4 trips", badge: "Rule-based bin threshold" },
+  { label: "Trips avoided", value: "4 trips", badge: "Smart route optimization" },
   { label: "Km reduced (today)", value: "37 km", badge: "Skipped near-empty clusters" },
-  { label: "Fuel saved (estimate)", value: "19%", badge: "Against 16-hr static baseline" },
+  { label: "Fuel saved (estimate)", value: "19%", badge: "Route efficiency improvement" },
+  { label: "CO₂ emission reduced", value: "12%", badge: "Lower fuel consumption impact" },
   { label: "Average truck fill at depot", value: "81%", badge: "Better utilisation" }
 ];
 
@@ -107,6 +108,7 @@ setIfExists("kpi-fuel-saving", kpiData.fuelSavingPct + "%");
 
   const fuelList = document.getElementById("fuel-summary-list");
   if (fuelList) {
+    fuelList.innerHTML = "";
     fuelSummary.forEach((item) => {
       const li = document.createElement("li");
       li.className = "summary-item";

@@ -34,10 +34,10 @@
     </div>
 
     <div class="kpi-container">
-      <div class="kpi-card glow"><h3>Route ID</h3><p>R-101</p></div>
-      <div class="kpi-card glow"><h3>Total Bins</h3><p>5</p></div>
-      <div class="kpi-card glow"><h3>Estimated Distance</h3><p>6.2 km</p></div>
-      <div class="kpi-card glow"><h3>Estimated Time</h3><p>45 min</p></div>
+      <div class="kpi-card glow"><h3>Route ID</h3><p id="routeId">--</p></div>
+      <div class="kpi-card glow"><h3>Total Bins</h3><p id="totalBins">0</p></div>
+      <div class="kpi-card glow"><h3>Estimated Distance</h3><p id="distance">--</p></div>
+      <div class="kpi-card glow"><h3>Estimated Time</h3><p id="time">--</p></div>
     </div>
 
     <div class="card glow">
@@ -53,17 +53,14 @@
             <th>Stop</th><th>Bin</th><th>Location</th><th>Coordinates</th><th>Status</th><th>Last Collected</th>
           </tr>
         </thead>
-        <tbody>
-          <tr><td>1</td><td>BIN-12</td><td>MG Road Market</td><td>22.573, 88.363</td><td class="status">Pending</td><td>12 Mar 2026, 08:15 AM</td></tr>
-          <tr><td>2</td><td>BIN-07</td><td>Bus Stand</td><td>22.571, 88.362</td><td class="status">Pending</td><td>12 Mar 2026, 07:55 AM</td></tr>
-          <tr><td>3</td><td>BIN-23</td><td>Housing Colony</td><td>22.574, 88.366</td><td class="status">Pending</td><td>11 Mar 2026, 05:30 PM</td></tr>
-          <tr><td>4</td><td>BIN-31</td><td>Vegetable Market</td><td>22.575, 88.360</td><td class="status">Pending</td><td>11 Mar 2026, 04:45 PM</td></tr>
-          <tr><td>5</td><td>BIN-02</td><td>Public Park</td><td>22.570, 88.364</td><td class="status">Pending</td><td>10 Mar 2026, 06:10 PM</td></tr>
+        <tbody id="routeStops">
+          <!-- Route stops will be inserted dynamically from the backend
+               based on AI model bin assignment to the logged-in driver -->
         </tbody>
       </table>
     </div>
   </div>
 
-  <script src="/js/route.js"></script>
+  <script src="/js/driver-route.js"></script>
 </body>
 </html>

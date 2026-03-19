@@ -127,7 +127,38 @@
 
 </div>
 
-<script src="pickups.js"></script>
+
+<script src="/js/driver-pickups.js"></script>
+<script>
+function collect(btn) {
+
+  const row = btn.closest("tr");
+  const statusCell = row.querySelector(".status");
+
+  if (statusCell.textContent === "Collected") return;
+
+  // change status text
+  statusCell.textContent = "Collected";
+  statusCell.style.color = "#2ecc71";
+  statusCell.style.fontWeight = "bold";
+
+  // disable button
+  btn.textContent = "Done";
+  btn.disabled = true;
+  btn.style.background = "#95a5a6";
+  btn.style.cursor = "default";
+
+  // update KPI counters
+  const collectedEl = document.getElementById("collectedBins");
+  const pendingEl = document.getElementById("pendingBins");
+
+  let collected = parseInt(collectedEl.textContent);
+  let pending = parseInt(pendingEl.textContent);
+
+  collectedEl.textContent = collected + 1;
+  pendingEl.textContent = pending - 1;
+}
+</script>
 
 </body>
 </html>

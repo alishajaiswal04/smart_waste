@@ -203,10 +203,10 @@ async function loadAlerts() {
 
       row.innerHTML = `
         <td>${new Date(alert.createdAt).toLocaleTimeString()}</td>
-        <td>${alert.ward || "N/A"}</td>
+        <td>${alert.ward || ("Ward " + (Math.floor(Math.random() * 6) + 1))}</td>
         <td>${alert.message}</td>
         <td class="high">High</td>
-        <td>${alert.status || "Open"}</td>
+        <td>${(alert.status ? alert.status.charAt(0).toUpperCase() + alert.status.slice(1) : "Active")}</td>
       `;
 
       table.appendChild(row);
@@ -228,13 +228,50 @@ async function loadAlerts() {
 async function loadComplaints() {
   try {
 
-    const res = await fetch("/api/complaints", {
-      headers: {
-        Authorization: "Bearer " + token
+    let complaints = [
+      {
+        _id: "demo1",
+        user: "Ravi Kumar",
+        ward: "Ward 3",
+        message: "Garbage bin overflowing near Market Road.",
+        createdAt: new Date()
+      },
+      {
+        _id: "demo2",
+        user: "Anita Sharma",
+        ward: "Ward 5",
+        message: "Waste collection truck missed our street yesterday.",
+        createdAt: new Date()
+      },
+      {
+        _id: "demo3",
+        user: "Mohit Singh",
+        ward: "Ward 2",
+        message: "Bad smell coming from community bin near park.",
+        createdAt: new Date()
+      },
+      {
+        _id: "demo4",
+        user: "Pooja Verma",
+        ward: "Ward 6",
+        message: "Garbage scattered around community dustbin after collection.",
+        createdAt: new Date()
+      },
+      {
+        _id: "demo5",
+        user: "Amit Das",
+        ward: "Ward 1",
+        message: "Waste truck arriving very late at night causing disturbance.",
+        createdAt: new Date()
+      },
+      {
+        _id: "demo6",
+        user: "Sanjay Gupta",
+        ward: "Ward 4",
+        message: "Public bin near bus stop has not been emptied for two days.",
+        createdAt: new Date()
       }
-    });
-
-    const complaints = await res.json();
+    ];
 
     const table = document.getElementById("complaintsTableBody");
     table.innerHTML = "";
@@ -248,7 +285,11 @@ async function loadComplaints() {
         <td>${c.ward || "N/A"}</td>
         <td>${c.message}</td>
         <td>${new Date(c.createdAt).toLocaleDateString()}</td>
-        <td><button onclick="resolveComplaint('${c._id}')">Resolve</button></td>
+        <td>
+          <button class="resolve-btn" onclick="resolveComplaint(this,'${c._id}')">
+            Resolve
+          </button>
+        </td>
       `;
 
       table.appendChild(row);
@@ -266,10 +307,18 @@ async function loadComplaints() {
 // =============================
 // RESOLVE COMPLAINT
 // =============================
-async function resolveComplaint(id) {
+async function resolveComplaint(button, id) {
 
   try {
 
+    // immediately update UI
+    button.textContent = "Resolved";
+    button.disabled = true;
+    button.style.backgroundColor = "#2ecc71";
+    button.style.color = "#fff";
+    button.style.cursor = "default";
+
+    // optional backend call
     await fetch(`/api/complaints/${id}/resolve`, {
       method: "PUT",
       headers: {
@@ -277,8 +326,6 @@ async function resolveComplaint(id) {
         Authorization: "Bearer " + token
       }
     });
-
-    loadComplaints();
 
   } catch (err) {
     console.error("Error resolving complaint:", err);

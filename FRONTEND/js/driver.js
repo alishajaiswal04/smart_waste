@@ -33,27 +33,32 @@ window.onload = async function() {
   try {
 
     // =============================
-    // LOAD BINS FROM BACKEND
+    // LOAD DRIVER ROUTE FROM BACKEND
     // =============================
-    const binsRes = await fetch("/api/bins", {
+    const driver = localStorage.getItem("driver");
+
+    const routeRes = await fetch(`/api/driver/route/${driver}`, {
       headers: {
         Authorization: "Bearer " + token
       }
     });
 
-    const bins = await binsRes.json();
+    const routeData = await routeRes.json();
+
+    // backend already returns only bins assigned to this driver
+    const bins = (routeData.bins || []).map(b => ({
+      ...b,
+      fillLevel: typeof b.fillLevel === "number" ? b.fillLevel : 0,
+      location: b.location ?? b.binId ?? "Bin"
+    }));
 
 
-    // =============================
-    // LOAD ALERTS
-    // =============================
-    const alertsRes = await fetch("/api/alerts", {
-      headers: {
-        Authorization: "Bearer " + token
-      }
-    });
-
-    const alerts = await alertsRes.json();
+    // driver alerts are derived from assigned bins
+    const alerts = bins
+      .filter(b => b.fillLevel >= 90)
+      .map(b => ({
+        message: `Critical bin ${b.binId}`
+      }));
 
 
     // =============================
@@ -110,7 +115,7 @@ window.onload = async function() {
     // =============================
     // BAR CHART (BIN FILL LEVEL)
     // =============================
-    const locations = bins.map(b => b.location || b.binId);
+    const locations = bins.map(b => b.location);
     const fillLevels = bins.map(b => b.fillLevel);
 
     const barCtx = document.getElementById("barChart").getContext("2d");
@@ -143,9 +148,11 @@ window.onload = async function() {
 
       if (!bin.latitude || !bin.longitude) return;
 
+      const level = typeof bin.fillLevel === "number" ? bin.fillLevel : 0;
+
       let color = "green";
-      if (bin.fillLevel >= 90) color = "red";
-      else if (bin.fillLevel >= 70) color = "orange";
+      if (level >= 90) color = "red";
+      else if (level >= 70) color = "orange";
 
       const marker = L.circleMarker([
         bin.latitude,
@@ -159,7 +166,7 @@ window.onload = async function() {
 
       marker.bindPopup(`
         <b>${bin.binId}</b><br>
-        ${bin.location || "Location"}<br>
+        ${bin.location}<br>
         Fill: ${bin.fillLevel}%
       `);
 
@@ -174,4 +181,33 @@ window.onload = async function() {
     console.error("Driver dashboard load error:", err);
   }
 
+  // =============================
+  // AUTO REFRESH DRIVER DATA
+  // =============================
+  setInterval(async () => {
+    try {
+
+      const token = localStorage.getItem("token");
+      const driver = localStorage.getItem("driver");
+
+      if (!token || !driver) return;
+
+      const routeRes = await fetch(`/api/driver/route/${driver}`, {
+        headers: {
+          Authorization: "Bearer " + token
+        }
+      });
+
+      const routeData = await routeRes.json();
+
+      // reload page if route changed
+      if (routeData && routeData.bins) {
+        location.reload();
+      }
+
+    } catch (err) {
+      console.error("Auto refresh error:", err);
+    }
+
+  }, 30000); // 30 seconds
 };
